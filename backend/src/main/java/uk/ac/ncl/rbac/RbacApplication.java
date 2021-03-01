@@ -1,5 +1,6 @@
 package uk.ac.ncl.rbac;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
+@MapperScan("uk.ac.ncl.rbac.mapper")
 public class RbacApplication {
 
 	public static void main(String[] args) {
