@@ -3,7 +3,7 @@
 <mapper namespace="uk.ac.ncl.rbac.mapper.PermissionMapper">
 
     <resultMap type="uk.ac.ncl.rbac.common.entity.Permission" id="PermissionMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
         <result property="permissionName" column="permission_name" jdbcType="VARCHAR"/>
     </resultMap>
 
