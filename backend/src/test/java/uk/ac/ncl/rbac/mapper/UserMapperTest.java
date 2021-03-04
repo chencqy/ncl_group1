@@ -1,5 +1,7 @@
 package uk.ac.ncl.rbac.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,5 +26,13 @@ public class UserMapperTest {
         System.out.println(("----- selectAll method test ------"));
         List<User> userList = userMapper.selectList(null);
         userList.forEach(System.out::println);
+    }
+
+    @Test
+    public void testListUserPage() {
+        System.out.println(("----- listUserPage method test ------"));
+        Page<User> page = new Page<>(1, 10);
+        IPage<User> users = userMapper.listUserPage(page);
+        users.getRecords().forEach(System.out::println);
     }
 }
