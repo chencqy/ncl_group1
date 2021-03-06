@@ -72,14 +72,14 @@ public class UserServiceImpl implements UserService {
      * @param account
      * @return UserVo has both roles and permissions
      */
-    @Override
-    public UserVo getUserInfo(String account) {
-        User user = getUserByAccount(account);
-        List<Role> roles = roleService.listRolesByUserId(user.getUserId());
-        List<Permission> permissions = permissionService.listPermissionsByUserId(user.getUserId());
-
-        UserVo userVo = new UserVo(user, roles, permissions);
-
-        return userVo;
-    }
+//    @Override
+//    public UserVo getUserInfo(String account) {
+//        User user = getUserByAccount(account);
+//        List<Role> roles = roleService.listRolesByUserId(user.getUserId());
+//        List<Permission> permissions = permissionService.listPermissionsByUserId(user.getUserId());
+//
+//        UserVo userVo = new UserVo(user, roles, permissions);
+//
+//        return userVo;
+//    }
 }

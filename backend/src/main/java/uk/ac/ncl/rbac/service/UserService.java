@@ -29,6 +29,6 @@ public interface UserService {
      * @param account
      * @return UserVo has both roles and permissions
      */
-    UserVo getUserInfo(String account);
+    //UserVo getUserInfo(String account);
 
 }

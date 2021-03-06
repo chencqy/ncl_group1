@@ -22,6 +22,17 @@ public class ApiController {
     
 	 @GetMapping("/get_data/{room}")
 	 	public HashMap<String,Object> get_data(@PathVariable("room") String room) {	  
-		return apiService.get_room(room);
+		return apiService.getRoom(room);
+	 }
+	 
+	 @GetMapping("/get_timeseries/{room}/{metric}/{start}/{end}")
+	 	public HashMap<String,Object> get_timeseries(
+	 			@PathVariable("room") String room,
+	 			@PathVariable("metric") String metric,
+	 			@PathVariable("start") String start,
+	 			@PathVariable("end") String end
+	 			) 
+	 {	  
+		return apiService.getTimeseries(room,metric,start,end);
 	 }
 }

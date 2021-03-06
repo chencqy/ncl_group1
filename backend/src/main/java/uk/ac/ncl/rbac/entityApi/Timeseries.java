@@ -1,19 +1,28 @@
 package uk.ac.ncl.rbac.entityApi;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Timeseries {
-	private Latest_or_values latest; 
+	private LatestOrValues latest; //get_data
+	private Historic historic; //get_timeseries
 	
-	public Latest_or_values getLatest() {
+	public LatestOrValues getLatest() {
 		return latest;
 	}
 
-	public void setLatest(Latest_or_values latest) {
+	public void setLatest(LatestOrValues latest) {
 		this.latest = latest;
 	}
 	
+	public Historic gethistoric() {
+		return historic;
+	}
 
+	public void sethistoric(Historic historic) {
+		this.historic = historic;
+	}
 	
 }
+
