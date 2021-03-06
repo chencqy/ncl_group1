@@ -43,9 +43,29 @@ public class UserServiceTest {
     @Test
     public void testGetUserInfo() {
         System.out.println(("----- GetUserInfo method test ------"));
-        String account = "user1";
+        String account = "testUser";
         UserVo userVo = userService.getUserInfo(account);
         System.out.println(userVo);
         Assert.assertEquals(account, userVo.getAccount());
+    }
+
+    @Test
+    public void testInsertUser() {
+        System.out.println(("----- InsertUser method test ------"));
+        User user = new User();
+        String account, userName, userEmail, phoneNumber, password;
+        account = "testUser";
+        userName = "test";
+        userEmail = "test@ncl.ac.uk";
+        phoneNumber = "44[0]1911911234";
+        password = "123456";
+        user.setAccount(account);
+        user.setUserName(userName);
+        user.setUserEmail(userEmail);
+        user.setPhoneNumber(phoneNumber);
+        user.setPassword(password);
+        String roleOfUser = "Member of Public";
+        userService.insertUser(user, roleOfUser);
+
     }
 }
