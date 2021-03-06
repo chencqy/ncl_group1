@@ -10,6 +10,7 @@ import uk.ac.ncl.rbac.common.entity.Permission;
 import uk.ac.ncl.rbac.common.entity.Role;
 import uk.ac.ncl.rbac.common.entity.User;
 import uk.ac.ncl.rbac.common.entity.vo.UserVo;
+import uk.ac.ncl.rbac.mapper.RoleMapper;
 import uk.ac.ncl.rbac.mapper.UserMapper;
 import uk.ac.ncl.rbac.service.PermissionService;
 import uk.ac.ncl.rbac.service.RoleService;
@@ -31,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private RoleService roleService;
+
+    @Resource
+    private RoleMapper roleMapper;
 
     @Resource
     private PermissionService permissionService;
@@ -81,5 +85,28 @@ public class UserServiceImpl implements UserService {
         UserVo userVo = new UserVo(user, roles, permissions);
 
         return userVo;
+    }
+
+    /**
+     * Insert a user into database
+     * @param user
+     * @param roleOfUser role of user
+     */
+    @Override
+    public void insertUser(User user, String roleOfUser) {
+        userMapper.insert(user);
+        int roleId = 0;
+        switch (roleOfUser) {
+            case "Building Manager" : roleId = 1;break;
+            case "Researcher" : roleId = 2;break;
+            case "Student" : roleId = 3;break;
+            case "Member of Public" : roleId = 4;break;
+        }
+        if (roleId == 0) {
+            logger.warn("Role is invalid");
+            throw new IllegalArgumentException("Role is invalid");
+        }
+        user = getUserByAccount(user.getAccount());
+        userMapper.insertUserRole(user.getUserId(), roleId);
     }
 }

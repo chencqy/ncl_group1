@@ -31,4 +31,11 @@ public interface UserService {
      */
     UserVo getUserInfo(String account);
 
+    /**
+     * Insert a user into database
+     * @param user
+     * @param roleOfUser role of user
+     */
+    void insertUser(User user, String roleOfUser);
+
 }
