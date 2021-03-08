@@ -2,10 +2,7 @@ package uk.ac.ncl.rbac.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ncl.rbac.common.entity.User;
 import uk.ac.ncl.rbac.common.entity.vo.UserVo;
 import uk.ac.ncl.rbac.common.results.JsonResult;
@@ -20,6 +17,7 @@ import javax.annotation.Resource;
  * User controller
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/user")
 public class UserController {
     @Resource

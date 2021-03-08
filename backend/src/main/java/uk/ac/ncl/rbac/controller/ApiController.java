@@ -1,17 +1,18 @@
 package uk.ac.ncl.rbac.controller;
 
-import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import uk.ac.ncl.rbac.service.ApiService;
+
+import java.util.HashMap;
 
 
 @RestController
+@CrossOrigin
 public class ApiController {
 	private final ApiService apiService ;
 	
