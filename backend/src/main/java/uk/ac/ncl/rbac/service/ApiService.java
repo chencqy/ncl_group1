@@ -16,12 +16,27 @@ import uk.ac.ncl.rbac.entityApi.Timeseries;
 @Service("apiService")
 public class ApiService {
 	
+	
+	public  HashMap<String,Object> getDfaultRooms (){
+		HashMap<String,Object> editedJson = new HashMap<String,Object>();
+		List<HashMap<String,Object>> defaultRoomList = new ArrayList<HashMap<String,Object>>() ;
+
+		defaultRoomList.add(getRoom("Floor-G-Atrium-Zone-1"));
+		defaultRoomList.add(getRoom("Floor-G-Atrium-Zone-2"));
+		defaultRoomList.add(getRoom("Floor-G-Back-Projection"));
+		defaultRoomList.add(getRoom("Floor-G-Cafe-Store"));
+		editedJson.put("rooms",defaultRoomList);
+		return editedJson;
+		
+	}
+	
+	
 	public HashMap<String,Object> getRoom (String room){
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
 		List<HashMap<String,Object>> metircs = new ArrayList<HashMap<String,Object>>();
 		ObjectMapper mapper = new ObjectMapper();
 		
-		System.out.println(room);
+		
 		String url = "https://api.usb.urbanobservatory.ac.uk/api/v2.0a/sensors/entity/"+room;
 	    
 		
