@@ -1,5 +1,8 @@
 package uk.ac.ncl.rbac.service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,10 +24,10 @@ public class ApiService {
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
 		List<HashMap<String,Object>> defaultRoomList = new ArrayList<HashMap<String,Object>>() ;
 
-		defaultRoomList.add(getRoom("Floor-G-Atrium-Zone-1"));
-		defaultRoomList.add(getRoom("Floor-G-Atrium-Zone-2"));
-		defaultRoomList.add(getRoom("Floor-G-Back-Projection"));
-		defaultRoomList.add(getRoom("Floor-G-Cafe-Store"));
+		defaultRoomList.add(getRoom("Floor-G-Room-G.071-Zone-3"));
+		defaultRoomList.add(getRoom("Floor-G-Room-G.063"));
+		defaultRoomList.add(getRoom("Floor-G-Room-G.062"));
+		defaultRoomList.add(getRoom("Floor-G-Room-G.003"));
 		editedJson.put("rooms",defaultRoomList);
 		return editedJson;
 		
@@ -68,44 +71,61 @@ public class ApiService {
 	
 	
 	
-	
 	public HashMap<String,Object> getTimeseries (String room,String metric,String start,String end){
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
 		List<HashMap<String,Object>> values = new ArrayList<HashMap<String,Object>>();
-		String url = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/"+room+"/"+metric+"/raw/historic?startTime="+start+"&endTime="+end;
-		System.out.println(url);
+		String url = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/"+room+"/"+metric+"/raw/historic?startTime="+start+"T00:00:00Z&endTime="+end+"T23:59:59";
 		ObjectMapper mapper = new ObjectMapper();
+		Timeseries jsonTimeSeries;
+		 
+		 URL urlRequest;
+		 BufferedReader br;
+		 StringBuilder sb = new StringBuilder();
+		 HttpURLConnection urlConnection;
+		 boolean success = false;
+		 
+		 while(!success) {
+			 try {
+				 urlRequest = new URL(url);
+
+			       urlConnection = (HttpURLConnection) urlRequest.openConnection();
+			       urlConnection.setRequestMethod("GET"); 
+			       urlConnection.setConnectTimeout(10000); 
+			       urlConnection.setReadTimeout(10000);
+			       if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+			    	      success = true;
+						  br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+					      String line;
+					      while ((line = br.readLine()) != null) {
+					      sb.append(line).append("\n");
+					      }
+					      br.close();	
+
+					      jsonTimeSeries =  mapper.readValue(sb.toString(), Timeseries.class); 
+					       HashMap<String,Object>  value;
+					        for(int i=0; i<jsonTimeSeries.gethistoric().getValues().size();i++) {
+					        	 value = new HashMap<String,Object>();
+					       	  	 value.put("time",jsonTimeSeries.gethistoric().getValues().get(i).getTime());
+					   		     value.put("value",jsonTimeSeries.gethistoric().getValues().get(i).getValue());	
+					   		     values.add(value);
+					        }
+					        editedJson.put("name", room); 
+					        editedJson.put("metric", metric); 
+					        editedJson.put("start", start);
+					        editedJson.put("end", end);
+					        editedJson.put("historic", values);
+						
+			  } 
+			       
+			} catch (Exception e) {
+				editedJson.put("error", "Unable to provide data within a sensible timeframe. Try requesting less data (QueryTimeout)" );
+				 url = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/"+room+"/"+metric+"/raw/historic?startTime="+start+"T00:00:00Z&endTime="+start+"T23:59:59";
+			}
+		 }
+
+
+			return editedJson;    
+			 
 		
-		try {
-		    
-		       Timeseries jsonTimeSeries =  mapper.readValue(new URL(url), Timeseries.class);   
-		       
-	           HashMap<String,Object>  value;
-	            for(int i=0; i<jsonTimeSeries.gethistoric().getValues().size();i++) {
-	            	
-	            	 value = new HashMap<String,Object>();
-	           	  	 value.put("time",jsonTimeSeries.gethistoric().getValues().get(i).getTime());
-	       		     value.put("value",jsonTimeSeries.gethistoric().getValues().get(i).getValue());	
-	       		     values.add(value);
-	            }
-	            
-	           
-	            
-	            editedJson.put("name", room); 
-	            editedJson.put("metric", metric); 
-	            editedJson.put("start", start);
-	            editedJson.put("end", end);
-	            editedJson.put("historic", values);
-	            System.out.println(editedJson.get("historic"));
-	            
-	            
-		} catch (Exception e) {
-			editedJson.put("error", "Not Found");
-			return editedJson;
-			
-			
-		}
-		return editedJson;
-		      
 	}
 }

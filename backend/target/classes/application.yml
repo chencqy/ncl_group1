@@ -1,6 +1,9 @@
 server:
   port: 8090
+  
+  
 spring:
+
   application:
     name: smartbuildings-rbac
   datasource:
@@ -18,4 +21,9 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: SELECT 1
+   
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1GB
 
