@@ -36,7 +36,7 @@ public class ApiService {
 	
 	public HashMap<String,Object> getRoom (String room){
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
-		List<HashMap<String,Object>> metircs = new ArrayList<HashMap<String,Object>>();
+		List<HashMap<String,Object>> metrics = new ArrayList<HashMap<String,Object>>();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		
@@ -50,11 +50,11 @@ public class ApiService {
 	            	 metric = new HashMap<String,Object>();
 	           	  	 metric.put("name",jsonEntry.getFeed().get(i).getMetric());
 	       		     metric.put("value",jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest()==null ? null : jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest().getValue() );	
-	       		     metircs.add(metric);
+	       		     metrics.add(metric);
 	            }
 	            
 	            editedJson.put("name", jsonEntry.getName());  
-	            editedJson.put("metircs", metircs);
+	            editedJson.put("metrics", metrics);
 	            
 	            
 	            
