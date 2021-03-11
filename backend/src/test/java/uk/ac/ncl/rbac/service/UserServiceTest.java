@@ -2,6 +2,8 @@ package uk.ac.ncl.rbac.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import org.apache.ibatis.javassist.convert.TransformNewClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

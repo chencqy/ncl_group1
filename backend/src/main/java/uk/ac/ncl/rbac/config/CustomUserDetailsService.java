@@ -7,20 +7,33 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import uk.ac.ncl.rbac.common.entity.Role;
+import uk.ac.ncl.rbac.mapper.UserMapper;
+import uk.ac.ncl.rbac.service.RoleService;
 import uk.ac.ncl.rbac.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 
 public class CustomUserDetailsService implements UserDetailsService {
-
+	
+	@Resource
+    private UserService userService;
+    @Resource
+    private RoleService roleService;
+	
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    	uk.ac.ncl.rbac.common.entity.User user = UserService.getUserByAccount(username);
+    	uk.ac.ncl.rbac.common.entity.User user = null;
+    	user = userService.getUserByAccount(username);
     	PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (user != null) {
-        	UserDetails u = User.withUsername(user.getAccount()).password(passwordEncoder.encode(user.getPassword())).authorities(user.getRole()).build();
+        	UserDetails u = null;
+            List<Role> roles = roleService.listRolesByUserId(user.getUserId());
+        	u = User.withUsername(user.getAccount()).password(passwordEncoder.encode(user.getPassword())).authorities(roles.get(0).getRoleName()).build();
             return u;
         }
         throw new UsernameNotFoundException("Username not found");
