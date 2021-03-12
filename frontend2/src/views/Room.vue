@@ -20,6 +20,8 @@
             </select>
             <br /><br/>
           </form>
+          <!--<date-picker v-model="time1" type="date" @change="onChangeDate()" format="YYYY-MM-DD"></date-picker>-->
+          <!--<date-picker v-model="time2" type="date" format="YYYY-MM-DD"></date-picker>-->
           <form name="form3" id="form" action="/action_page.php">
             Metric:
             <select name="subject" v-model="metricSelect"  @change="onChangeMetric($event)">
@@ -28,8 +30,7 @@
               <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
           </form>
-          <date-picker v-model="time1" type="date" @change="onChangeDate()" format="YYYY-MM-DD"></date-picker>
-          <date-picker v-model="time2" type="date" format="YYYY-MM-DD"></date-picker>
+
             <b-row>
                 <b-col>
                 <vue-frappe v-if="showgraph"
@@ -48,14 +49,15 @@
 
 <script>
 import axios from 'axios'
-import DatePicker from 'vue2-datepicker'
+// import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 
 export default {
-  components: { DatePicker },
+  // components: { DatePicker },
   name: 'Room',
   data () {
     return {
+      // NEED TO TIDY UP THESE VARIABLES - with vuex?
       showgraph: false,
       graph_data: null,
       x_axis: [],
@@ -117,7 +119,6 @@ export default {
         // this.metrics = response.data.metircs
         })
     },
-    // Need to change room value to fit USB uni api
     // room-6.025
     onChangeMetric (event) {
       this.showgraph = false
@@ -134,8 +135,6 @@ export default {
           // console.log(response.data.historic)
           if (this.graph_data == null) {
             this.graph_data = response.data.historic.values
-            var type = response.data.timeseries.parentFeed.metric
-            console.log(type)
           } else {
             // need to clear up the variables used for the graph
             this.graph_data = []
@@ -156,7 +155,6 @@ export default {
         this.x_axis.push(this.graph_data[i].time)
       }
       this.x_axis.reverse() // puts x-axis in right order
-      // add if statemtent here for if graph data is empty?
       this.co2.datasets.push({ values: this.y_axis })
       this.labels.push({ values: this.x_axis })
       this.showgraph = true
