@@ -7,7 +7,7 @@
 </template>
 
 <script>
-// import UserService from '../services/user.service'
+import UserService from '../services/user.service'
 
 export default {
   name: 'Home',
@@ -17,9 +17,9 @@ export default {
     }
   },
   mounted () {
-    /* UserService.getPublicContent().then(
+    UserService.getPublicContent().then(
       response => {
-        this.content = response.data
+        this.content = response.data.rooms
       },
       error => {
         this.content =
@@ -27,7 +27,7 @@ export default {
           error.message ||
           error.toString()
       }
-    ) */
+    )
   }
 }
 </script>

@@ -2,7 +2,7 @@ import axios from 'axios'
 import authHeader from './auth-header'
 
 // edit this
-const API_URL = 'http://localhost:8080/api/test/'
+const API_URL = 'http://18.132.43.65:8090/'
 // http://18.132.43.65:8090/
 
 // edit these methods
@@ -10,7 +10,7 @@ class UserService {
   // Base level request - for home page
   getPublicContent () {
     // get_default_rooms?
-    return axios.get(API_URL + 'all')
+    return axios.get(API_URL + 'get_default_rooms')
   }
 
   getUserBoard () {
