@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static String USER = "ROLE_USER";
 
     private final LoginCountService loginCountService;
+
+    @Resource
+    private CustomUserDetailsService customUserDetailsService;
 
     private final static String[] PERMIT_ALL_MAPPING = {
             "/api/login",
@@ -99,7 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setHideUserNotFoundExceptions(false);
         provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(new CustomUserDetailsService());
+        provider.setUserDetailsService(customUserDetailsService);
         return provider;
     }
 }
