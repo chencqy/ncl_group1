@@ -1,13 +1,15 @@
 import axios from 'axios'
 
-// Edit this
-const API_URL = 'http://localhost:8080/api/auth/'
+//const API_URL = 'http://18.132.43.65:8090/'
+const API_URL = 'http://localhost:8090/'
+
+axios.defaults.withCredentials = true
 
 class AuthService {
   login (user) {
     return axios
     // Add login endpoint
-      .post(API_URL + 'signin', {
+      .post(API_URL + 'api/login', {
         username: user.username,
         password: user.password
       })
