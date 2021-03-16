@@ -27,8 +27,8 @@
               <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
           </form>
-          <!--<date-picker v-model="time1" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>-->
-          <!--<date-picker v-model="time2" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>-->
+          <date-picker v-model="time1" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>
+          <date-picker v-model="time2" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>
             <b-row>
                 <b-col>
                 <vue-frappe v-if="showgraph"
@@ -38,7 +38,7 @@
                   :labels="labels[0].values"
                   :lineOptions="{regionFill: 1}"
                   :colors="['red']"
-                  :dataSets="co2.datasets"
+                  :dataSets="content.datasets"
                 ></vue-frappe>
                 </b-col>
             </b-row>
@@ -47,13 +47,13 @@
 
 <script>
 import axios from 'axios'
-// import DatePicker from 'vue2-datepicker'
+import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 import UserService from '../services/user.service'
 // import { response } from 'express'
 
 export default {
-  // components: { DatePicker },
+  components: { DatePicker },
   name: 'Room',
   data () {
     return {
@@ -61,13 +61,13 @@ export default {
       graph_data: null,
       x_axis: [],
       y_axis: [],
-      co2: {
+      content: {
         datasets: []
       },
       labels: [],
       time1: null,
       time2: null,
-      time: { time1: { date: '', month: '', year: '' }, time2: { date: '', month: '', year: '' } },
+      time: { time1: { date: '', month: '', year: '' }, time2: { date: '', month: '', year: '' }, start: '', end: '' },
       floorSelect: null,
       apiRoom: null,
       apiMetric: null,
@@ -88,8 +88,6 @@ export default {
     }
   },
   beforeDestroy: function () {
-    this.x_axis.length = 0
-    this.y_axis.length = 0
   },
   async mounted () {
     await this.createInput()
@@ -132,33 +130,31 @@ export default {
     onChangeMetric (event) {
       this.showgraph = false
       this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
-      // var res = event.target.value.replaceAll(' ', '-').toLowerCase() // Hyphenate and lowercase metric value
-      // console.log(this.time1.toTimeString())
       // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + this.apiMetric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
       // need to parse date/month so that single digit is souble eg 04
       // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
       // 2019-05-27
-      // console.log(url)
       // axios.get(url).then(response => {
-      UserService.getRoomMetric(this.apiRoom, this.apiMetric).then(response => {
-        // console.log(response.data.historic)
-        if (this.graph_data == null) {
-          console.log(response)
-          this.graph_data = response.data.historic
-        } else {
-          // need to clear up the variables used for the graph
-          this.graph_data = []
-          this.x_axis = []
-          this.y_axis = []
-          this.labels = []
-          this.co2.datasets = []
-          this.graph_data = response.data.historic
-        }
-        this.setGraphData()
-      })
+      if (this.time1 !== null && this.time2 !== null) {
+        UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
+          if (this.graph_data === null) {
+            console.log(response)
+            this.graph_data = response.data.historic
+          } else {
+            // need to clear up the variables used for the graph
+            this.graph_data = []
+            this.x_axis = []
+            this.y_axis = []
+            this.labels = []
+            this.content.datasets = []
+            this.graph_data = response.data.historic
+          }
+          this.setGraphData()
+        })
+      }
     },
     setGraphData () {
-    // Add to x,y axis, labels and dataset
+      // Add to x,y axis, labels and dataset
       let i = 0
       for (i; i < this.graph_data.length; i++) {
         this.y_axis.push(this.graph_data[i].value)
@@ -166,25 +162,44 @@ export default {
       }
       this.x_axis.reverse() // puts x-axis in right order
       // add if statemtent here for if graph data is empty?
-      this.co2.datasets.push({ values: this.y_axis })
+      this.content.datasets.push({ values: this.y_axis })
       this.labels.push({ values: this.x_axis })
       this.showgraph = true
     },
     onChangeDate (event) {
-      var date = event.getDate()
-      var month = event.getMonth()
-      if (date.toString().length === 1) {
-        date = '0' + date
-      } else if (month.toString().length === 1) {
-        month = '0' + month
+      this.time.time1.date = this.changeNumber(this.time1.getDate())
+      this.time.time1.month = this.changeNumber(this.time1.getMonth().valueOf() + 1)
+      this.time.time1.year = this.time1.getFullYear()
+      // var start = String(this.time.time1.year + '-' + this.time.time1.month + '-' + this.time.time1.date)
+      this.time.start = String(this.time.time1.year + '-' + this.time.time1.month + '-' + this.time.time1.date)
+
+      this.time.time2.date = this.changeNumber(this.time2.getDate())
+      this.time.time2.month = this.changeNumber(this.time2.getMonth().valueOf() + 1)
+      this.time.time2.year = this.time2.getFullYear()
+      // var end = String(this.time.time2.year + '-' + this.time.time2.month + '-' + this.time.time2.date)
+      this.time.end = String(this.time.time2.year + '-' + this.time.time2.month + '-' + this.time.time2.date)
+      this.setGraphData()
+      UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
+        // console.log(response.data.historic)
+        if (this.graph_data == null) {
+          this.graph_data = response.data.historic
+        } else {
+          // need to clear up the variables used for the graph
+          this.graph_data = []
+          this.x_axis = []
+          this.y_axis = []
+          this.labels = []
+          this.content.datasets = []
+          this.graph_data = response.data.historic
+        }
+        this.setGraphData()
+      })
+    },
+    changeNumber (number) {
+      if (number.toString().length === 1) {
+        number = '0' + number
       }
-      // var date = event.target.value
-      // console.log(event.getDate())
-      // console.log(event.getDate().toString().length)
-      // console.log(this.time1.getMonth())
-      // console.log(this.time1.getFullYear())
-      // console.log(date)
-      // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
+      return number
     }
   }
 
