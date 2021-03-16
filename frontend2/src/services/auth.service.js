@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-//const API_URL = 'http://18.132.43.65:8090/'
-const API_URL = 'http://localhost:8090/'
+const API_URL = 'http://18.132.43.65:8090/'
+//  const API_URL = 'http://localhost:8090/'
 
 axios.defaults.withCredentials = true
 

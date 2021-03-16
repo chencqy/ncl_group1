@@ -2,8 +2,8 @@ import axios from 'axios'
 import authHeader from './auth-header'
 
 // edit this
-// const API_URL = 'http://localhost:8080/api/test/'
-const API_URL = 'http://18.132.43.65:8090/'
+const API_URL = 'http://localhost:8090'
+// const API_URL = 'http://18.132.43.65:8090/'
 const UNI_URL = 'https://api.usb.urbanobservatory.ac.uk/api/v2'
 // edit these methods
 class UserService {
