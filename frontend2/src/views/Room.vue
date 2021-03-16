@@ -169,3 +169,10 @@ export default {
 
 }
 </script>
+<style>
+p{
+  font-size:0.8rem;
+  color:#000000;
+  text-align:center
+}
+</style>
