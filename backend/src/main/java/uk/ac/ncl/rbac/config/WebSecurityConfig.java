@@ -27,10 +27,10 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    public static String ADMIN = "ROLE_ADMIN";
-    public static String RESEARCHER = "ROLE_RESEARCHER";
-    public static String STUDENT = "ROLE_STUDENT";
-    public static String USER = "ROLE_USER";
+    public static String ADMIN = "ROLE_BuildingManager";
+    public static String RESEARCHER = "ROLE_Researcher";
+    public static String STUDENT = "ROLE_Student";
+    public static String USER = "ROLE_MemberOfPublic";
 
     private final LoginCountService loginCountService;
 
@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final static String[] PERMIT_ALL_MAPPING = {
             "/api/login",
-            "/api/home",
+            "/api/home"
     };
 
     public WebSecurityConfig(LoginCountService loginCountService) {
@@ -55,7 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         List<String> allowedOriginsUrl = new ArrayList<>();
-        allowedOriginsUrl.add("http://http://18.132.43.65:8090");
+        allowedOriginsUrl.add("http://18.132.43.65:8090");
+        allowedOriginsUrl.add("http://localhost:8090");
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(allowedOriginsUrl);
@@ -71,8 +72,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(PERMIT_ALL_MAPPING)
                 .permitAll()
-                .antMatchers("/api/data", "/api/login")
+                .antMatchers("/api/home", "/api/login", "/api/logout")
                 .hasAnyAuthority(USER, RESEARCHER, STUDENT, ADMIN)
+                .antMatchers("/api/user/**")
+                .hasAnyAuthority(USER)
+                .antMatchers("/api/student/**")
+                .hasAnyAuthority(STUDENT)
+                .antMatchers("/api/researcher/**")
+                .hasAnyAuthority(RESEARCHER)
+                .antMatchers("/api/admin/**")
+                .hasAnyAuthority(ADMIN)
                 .anyRequest()
                 .authenticated()
                 .and()
