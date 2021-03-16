@@ -27,8 +27,8 @@
               <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
           </form>
-          <!--<date-picker v-model="time1" type="date" @change="onChangeDate()" format="YYYY-MM-DD"></date-picker>-->
-          <!--<date-picker v-model="time2" type="date" format="YYYY-MM-DD"></date-picker>-->
+          <!--<date-picker v-model="time1" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>-->
+          <!--<date-picker v-model="time2" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>-->
             <b-row>
                 <b-col>
                 <vue-frappe v-if="showgraph"
@@ -67,8 +67,10 @@ export default {
       labels: [],
       time1: null,
       time2: null,
+      time: { time1: { date: '', month: '', year: '' }, time2: { date: '', month: '', year: '' } },
       floorSelect: null,
       apiRoom: null,
+      apiMetric: null,
       roomSelect: null,
       metricSelect: null,
       rooms: null,
@@ -96,10 +98,18 @@ export default {
     // Load room names from CSV file, stored in rooms.data
     createInput () {
       var url = 'https://raw.githubusercontent.com/tomrob1/Prototype/main/src/assets/allTheRooms.json'
-      axios.get(url)
+      // Temporary fix
+      axios({
+        method: 'get',
+        url: url,
+        withCredentials: false
+      }).then(response => {
+        this.rooms = response.data
+      })
+      /* axios.get(url)
         .then(response => {
           this.rooms = response.data
-        })
+        }) */
     },
     // When select option changes, cut array ro return rooms
     onChangeFloor (event) {
@@ -121,20 +131,20 @@ export default {
     // room-6.025
     onChangeMetric (event) {
       this.showgraph = false
-      var res = event.target.value.replaceAll(' ', '-').toLowerCase() // Hyphenate and lowercase metric value
+      this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
+      // var res = event.target.value.replaceAll(' ', '-').toLowerCase() // Hyphenate and lowercase metric value
       // console.log(this.time1.toTimeString())
-      var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
+      // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + this.apiMetric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
       // need to parse date/month so that single digit is souble eg 04
       // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
       // 2019-05-27
-      console.log(url)
+      // console.log(url)
       // axios.get(url).then(response => {
-      UserService.getRoomMetric(this.apiRoom, res).then(response => {
+      UserService.getRoomMetric(this.apiRoom, this.apiMetric).then(response => {
         // console.log(response.data.historic)
         if (this.graph_data == null) {
-          this.graph_data = response.data.historic.values
-          var type = response.data.timeseries.parentFeed.metric
-          console.log(type)
+          console.log(response)
+          this.graph_data = response.data.historic
         } else {
           // need to clear up the variables used for the graph
           this.graph_data = []
@@ -142,7 +152,7 @@ export default {
           this.y_axis = []
           this.labels = []
           this.co2.datasets = []
-          this.graph_data = response.data.historic.values
+          this.graph_data = response.data.historic
         }
         this.setGraphData()
       })
@@ -161,9 +171,20 @@ export default {
       this.showgraph = true
     },
     onChangeDate (event) {
-      console.log(this.time1.getDate())
-      console.log(this.time1.getMonth())
-      console.log(this.time1.getFullYear())
+      var date = event.getDate()
+      var month = event.getMonth()
+      if (date.toString().length === 1) {
+        date = '0' + date
+      } else if (month.toString().length === 1) {
+        month = '0' + month
+      }
+      // var date = event.target.value
+      // console.log(event.getDate())
+      // console.log(event.getDate().toString().length)
+      // console.log(this.time1.getMonth())
+      // console.log(this.time1.getFullYear())
+      // console.log(date)
+      // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
     }
   }
 

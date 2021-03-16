@@ -4,7 +4,7 @@ import authHeader from './auth-header'
 // edit this
 // const API_URL = 'http://localhost:8090'
 const API_URL = 'http://18.132.43.65:8090/'
-const UNI_URL = 'https://api.usb.urbanobservatory.ac.uk/api/v2'
+// const UNI_URL = 'https://api.usb.urbanobservatory.ac.uk/api/v2'
 // edit these methods
 class UserService {
   // Base level request - for home page
@@ -28,8 +28,10 @@ class UserService {
 
   // get roominfo method?
   getRoomMetric (room, metric) {
-    var endpoint = '/sensors/timeseries/' + room + '/' + metric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
-    return axios.get(UNI_URL + endpoint)
+    // var endpoint = '/sensors/timeseries/' + room + '/' + metric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
+    var endpoint = 'get_timeseries/' + room + '/' + metric + '/2019-05-27/2019-05-29'
+    console.log(API_URL + endpoint)
+    return axios.get(API_URL + endpoint)
   }
 }
 

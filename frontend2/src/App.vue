@@ -19,8 +19,8 @@ export default {
   computed: {
     currentUser () {
       return this.$store.state.auth.user
-    },
-    showAdminBoard () {
+    }
+    /* showAdminBoard () {
       if (this.currentUser && this.currentUser.roles) {
         return this.currentUser.roles.includes('ROLE_ADMIN')
       }
@@ -33,7 +33,7 @@ export default {
       }
 
       return false
-    }
+    } */
   },
   methods: {
     logOut () {
