@@ -14,14 +14,11 @@
           <form name="form2" id="form" action="/action_page.php">
             Room:
             <select name="subject" v-model="roomSelect"  @change="onChangeRoom($event)">
-              <!--Do we need :value here -->
               <option  v-for="(room,index) in filterResult" :key="index" :value="room" >{{room}}</option>
               <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
             <br /><br/>
           </form>
-          <!--<date-picker v-model="time1" type="date" @change="onChangeDate()" format="YYYY-MM-DD"></date-picker>-->
-          <!--<date-picker v-model="time2" type="date" format="YYYY-MM-DD"></date-picker>-->
           <form name="form3" id="form" action="/action_page.php">
             Metric:
             <select name="subject" v-model="metricSelect"  @change="onChangeMetric($event)">
@@ -30,7 +27,8 @@
               <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
           </form>
-
+          <!--<date-picker v-model="time1" type="date" @change="onChangeDate()" format="YYYY-MM-DD"></date-picker>-->
+          <!--<date-picker v-model="time2" type="date" format="YYYY-MM-DD"></date-picker>-->
             <b-row>
                 <b-col>
                 <vue-frappe v-if="showgraph"
@@ -51,13 +49,14 @@
 import axios from 'axios'
 // import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
+import UserService from '../services/user.service'
+// import { response } from 'express'
 
 export default {
   // components: { DatePicker },
   name: 'Room',
   data () {
     return {
-      // NEED TO TIDY UP THESE VARIABLES - with vuex?
       showgraph: false,
       graph_data: null,
       x_axis: [],
@@ -86,6 +85,10 @@ export default {
         { number: 'Roof', index: 7 }]
     }
   },
+  beforeDestroy: function () {
+    this.x_axis.length = 0
+    this.y_axis.length = 0
+  },
   async mounted () {
     await this.createInput()
   },
@@ -100,52 +103,49 @@ export default {
     },
     // When select option changes, cut array ro return rooms
     onChangeFloor (event) {
-      // console.log(event.target.value)
       this.filterResult = this.rooms[event.target.value].rooms
     },
     // tidy up
     onChangeRoom (event) {
-      // console.log(event.target.value)
-      var res = event.target.value.replaceAll(' ', '-')
-      var res2 = event.target.value.replaceAll(' ', '-').toLowerCase()
-      this.apiRoom = res2
-      // console.log(res2)
-
+      var res = event.target.value.replaceAll(' ', '-').toLowerCase()
+      this.apiRoom = res
       var url = 'http://18.132.43.65:8090/get_data/' + res
-      // console.log(url)
+      console.log(url)
       axios.get(url)
         .then(response => {
           this.metrics = response.data.metrics
         // this.metrics = response.data.metircs
         })
     },
+    // Need to change room value to fit USB uni api
     // room-6.025
     onChangeMetric (event) {
       this.showgraph = false
       var res = event.target.value.replaceAll(' ', '-').toLowerCase() // Hyphenate and lowercase metric value
-      // Need to add date part
-      console.log(this.time1.toTimeString())
+      // console.log(this.time1.toTimeString())
       var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
       // need to parse date/month so that single digit is souble eg 04
       // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
       // 2019-05-27
       console.log(url)
-      axios.get(url)
-        .then(response => {
-          // console.log(response.data.historic)
-          if (this.graph_data == null) {
-            this.graph_data = response.data.historic.values
-          } else {
-            // need to clear up the variables used for the graph
-            this.graph_data = []
-            this.x_axis = []
-            this.y_axis = []
-            this.labels = []
-            this.co2.datasets = []
-            this.graph_data = response.data.historic.values
-          }
-          this.setGraphData()
-        })
+      // axios.get(url).then(response => {
+      UserService.getRoomMetric(this.apiRoom, res).then(response => {
+        // console.log(response.data.historic)
+        if (this.graph_data == null) {
+          this.graph_data = response.data.historic.values
+          var type = response.data.timeseries.parentFeed.metric
+          console.log(type)
+        } else {
+          // need to clear up the variables used for the graph
+          this.graph_data = []
+          this.x_axis = []
+          this.y_axis = []
+          this.labels = []
+          this.co2.datasets = []
+          this.graph_data = response.data.historic.values
+        }
+        this.setGraphData()
+      })
     },
     setGraphData () {
     // Add to x,y axis, labels and dataset
@@ -155,6 +155,7 @@ export default {
         this.x_axis.push(this.graph_data[i].time)
       }
       this.x_axis.reverse() // puts x-axis in right order
+      // add if statemtent here for if graph data is empty?
       this.co2.datasets.push({ values: this.y_axis })
       this.labels.push({ values: this.x_axis })
       this.showgraph = true
