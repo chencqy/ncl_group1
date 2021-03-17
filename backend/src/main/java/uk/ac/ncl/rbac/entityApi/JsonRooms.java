@@ -2,15 +2,22 @@ package uk.ac.ncl.rbac.entityApi;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JsonRooms {
-	private List<String> admin;
+	private List<Object> admin;
 	private List<String> researcher;
 	private List<String> student;
 	private List<String> publicUser;
-	public List<String> getAdmin() {
+	
+	public List<Object> getAdmin() {
 		return admin;
 	}
-	public void setAdmin(List<String> admin) {
+	public void setAdmin(List<Object> admin) {
 		this.admin = admin;
 	}
 	public List<String> getResearcher() {
@@ -28,8 +35,8 @@ public class JsonRooms {
 	public List<String> getPublicUser() {
 		return publicUser;
 	}
-	public void setPublicUser(List<String> publicUser) {
-		this.publicUser = publicUser;
+	public void setPublicUser(List<String> publicUSer) {
+		this.publicUser = publicUSer;
 	}
 	
 	

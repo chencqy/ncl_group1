@@ -35,7 +35,7 @@ public class ApiService {
 		if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student") || role.equalsIgnoreCase("researcher") || role.equalsIgnoreCase("public")) {
 			ObjectMapper mapper = new ObjectMapper();
 			String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
-
+		
 			try {
 				JsonRooms jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class);
 
@@ -85,17 +85,18 @@ public class ApiService {
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		JsonRooms jsonRooms;
-		List <String> adminRooms = new ArrayList<String>();
+		List <Object> adminRooms = new ArrayList<Object>();
 		try {
 			jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class); 
 
-			switch (role) {
+
+			 switch (role) {
 			case "admin":
 				adminRooms.addAll(jsonRooms.getAdmin());
 				adminRooms.addAll(jsonRooms.getResearcher());
 				adminRooms.addAll(jsonRooms.getStudent());
 				adminRooms.addAll(jsonRooms.getPublicUser());
-
+				
 				editedJson.put("admin",adminRooms);
 				break;
 			case "researcher":
@@ -112,15 +113,14 @@ public class ApiService {
 				editedJson.put("error","Permission denied");
 				break;
 			}
-
+			 
 		}  catch (Exception e) {
 			editedJson.put("error","Not found");
 		}
-
+		
 		return editedJson;
-
+		
 	}
-
 
 
 	public HashMap<String,Object> getRoom (String role,String room){
