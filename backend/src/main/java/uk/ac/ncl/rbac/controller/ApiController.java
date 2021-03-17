@@ -38,7 +38,7 @@ public class ApiController {
 		return apiService.getRoom(role,room);
 	 }
 	 
-	 @GetMapping("/api/{role}/get_timeseries/{role}/{room}/{metric}/{start}/{end}")
+	 @GetMapping("/api/{role}/get_timeseries/{room}/{metric}/{start}/{end}")
 	 	public HashMap<String,Object> getTimeseries(
 	 			@PathVariable("role") String role,
 	 			@PathVariable("room") String room,

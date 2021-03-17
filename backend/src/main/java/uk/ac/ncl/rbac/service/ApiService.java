@@ -26,7 +26,7 @@ public class ApiService {
 
 	public boolean Customizedcontains(List<String> list, String room) {
 		for (String s : list) {
-			if (s.equalsIgnoreCase(room)) return true;
+			if ((s.replace(" ", "").trim()).equalsIgnoreCase(room)) return true;
 		}
 		return false;
 	}
@@ -34,45 +34,46 @@ public class ApiService {
 	public boolean PermissionCheck(String role,String room) {
 		if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student") || role.equalsIgnoreCase("researcher") || role.equalsIgnoreCase("public")) {
 			ObjectMapper mapper = new ObjectMapper();
-			String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
-		
+			String url = "https://hsjo0914.github.io/JsonFile/Rooms.json";
 			try {
-				JsonRooms jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class);
-
-				String replacedRoom = room.replace("-", "");
-				switch (role) {
-				case "researcher":
-					if(!Customizedcontains(jsonRooms.getResearcher(),replacedRoom)){
-						return false;
-					}
-					break;
-
-				case "student":
-					if(!Customizedcontains(jsonRooms.getStudent(),replacedRoom)){
-						return false;
-					}
-					break;
-
-				case "public":
-					if(!Customizedcontains(jsonRooms.getPublicUser(),replacedRoom)){
-						return false;
-					}
-					break;
-				default:
-					break;
+				JsonRooms jsonRooms =  mapper.readValue(new URL(url), JsonRooms.class);
+				String replacedRoom = room.replace("-", "").trim();
+			
+				if(role.equalsIgnoreCase("admin")) {
+					return true;
 				}
+				
+				if(role.equalsIgnoreCase("resercher")) {
+					return Customizedcontains(jsonRooms.getResearcher(),replacedRoom);
+				}
+					
+				if(role.equalsIgnoreCase("student")) {
+					return Customizedcontains(jsonRooms.getStudent(),replacedRoom);
+				}
+					
+				if(role.equalsIgnoreCase("public")) {
+					return Customizedcontains(jsonRooms.getPublicUser(),replacedRoom);
+				}
+					
+				else {
+					return false;
+				}
+				
+				
+					
+				
 
 			} catch (Exception e) {
 				return false;
 			} 
-			return true;
+		
 
 		}else {
 			return false;
 		}
 	}
 
-	
+
 
 
 
@@ -81,22 +82,23 @@ public class ApiService {
 
 
 	public  HashMap<String,Object> getDfaultRoomsByRole(String role){
-		String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
+		String url = "https://hsjo0914.github.io/JsonFile/Rooms.json";
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		JsonRooms jsonRooms;
 		List <Object> adminRooms = new ArrayList<Object>();
 		try {
-			jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class); 
+			jsonRooms =  mapper.readValue(new URL(url), JsonRooms.class); 
+			
+			
 
-
-			 switch (role) {
+			switch (role) {
 			case "admin":
 				adminRooms.addAll(jsonRooms.getAdmin());
 				adminRooms.addAll(jsonRooms.getResearcher());
 				adminRooms.addAll(jsonRooms.getStudent());
 				adminRooms.addAll(jsonRooms.getPublicUser());
-				
+
 				editedJson.put("admin",adminRooms);
 				break;
 			case "researcher":
@@ -113,13 +115,14 @@ public class ApiService {
 				editedJson.put("error","Permission denied");
 				break;
 			}
-			 
+
 		}  catch (Exception e) {
+		
 			editedJson.put("error","Not found");
 		}
-		
+
 		return editedJson;
-		
+
 	}
 
 
