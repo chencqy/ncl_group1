@@ -2,16 +2,18 @@
     <div class="dashboard">
         <b-container>
             <b-row>
-                <b-col>{{currentUser.user.power}}</b-col>
                 <b-col>
-                  <b-card
-                    :title="room"
-                    v-for="(room,index) in content" :key="index">
-                    <b-card-text>
-                      {{room}}
-                    </b-card-text>
-
-                    <b-button v-on:click="buttonClick(room)" variant="primary">Go somewhere</b-button>
+                  {{this.currentUser.user.power}}
+                  <b-card>
+                    <b-card
+                      :title="room"
+                      v-for="(room,index) in content" :key="index">
+                      <b-card-text>
+                        {{room}}
+                        <p>{{metrics}}</p>
+                      </b-card-text>
+                      <b-button v-on:click="buttonClick(room)" variant="primary">Go somewhere</b-button>
+                    </b-card>
                   </b-card>
                 </b-col>
             </b-row>
@@ -21,6 +23,7 @@
 </template>
 
 <script>
+// import { delete } from 'vue/types/umd'
 // import { response } from 'express'
 import UserService from '../services/user.service'
 
@@ -29,7 +32,8 @@ export default {
   name: 'Dashboard',
   data () {
     return {
-      content: ''
+      content: '',
+      metrics: ''
     }
   },
   computed: {
@@ -42,6 +46,9 @@ export default {
     logOut () {
       this.$store.dispatch('auth/logout')
       this.$router.push('/login')
+    },
+    linkGen(pageNum) {
+      return pageNum === 1 ? '?' : `?page=${pageNum}`
     },
     showStudentBoard () {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_Student,')) {
@@ -82,6 +89,18 @@ export default {
         UserService.getRoomMetric(fix , role).then(
           response => {
             console.log(response)
+            this.metrics = response.data.metrics
+            let i = 0
+            // Filter metrics and remove null values
+            // use .filter method?
+            for (i ; i < this.metrics.length; i++){
+              if (this.metrics[i].value === null){
+                console.log('splice')
+                // delete this.metrics[i]
+                this.metrics.splice(i,i)
+                // this.metrics = 
+              }
+            } 
           } 
         )
     }
@@ -105,5 +124,11 @@ export default {
 
 .logo img{
     width: 20%;
+}
+
+p{
+  font-size:0.8rem;
+  color:#000000;
+  text-align:center
 }
 </style>
