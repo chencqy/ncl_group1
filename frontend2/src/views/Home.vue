@@ -3,10 +3,10 @@
     <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
     <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
   <b-card
-    :title="room.name"
+    :title="room"
     v-for="(room,index) in content" :key="index">
     <b-card-text>
-      {{room.name}}
+      {{room}}
     </b-card-text>
 
     <b-button href="#" variant="primary">Go somewhere</b-button>
@@ -28,7 +28,7 @@ export default {
     UserService.getPublicContent().then(
       response => {
         console.log(response)
-        this.content = response.data.rooms
+        this.content = response.data.public
       },
       error => {
         this.content =

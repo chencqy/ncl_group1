@@ -87,7 +87,10 @@ export default {
         { number: 'Roof', index: 7 }]
     }
   },
-  beforeDestroy: function () {
+  computed: {
+    currentUser () {
+      return this.$store.state.auth.user
+    }
   },
   async mounted () {
     await this.createInput()
@@ -116,27 +119,19 @@ export default {
     },
     // tidy up
     onChangeRoom (event) {
-      var res = event.target.value.replaceAll(' ', '-').toLowerCase()
-      this.apiRoom = res
-      // edit to default rooms for user role? or just have room.vue for admin only
-      // /api/{​role}​/get_data/{​room}
-      var url = 'http://18.132.43.65:8090/get_data/' + res
-
-      console.log(url)
-      axios.get(url)
-        .then(response => {
-          this.metrics = response.data.metrics
-        // this.metrics = response.data.metircs
-        })
+      this.apiRoom = event.target.value.replaceAll(' ', '-').toLowerCase()
+      var role = UserService.getRole(this.currentUser.power)
+      UserService.getRoomMetric(this.apiRoom, role).then(response => {
+        this.metrics = response.data.metrics
+      })
     },
     // Need to change room value to fit USB uni api
     // room-6.025
     onChangeMetric (event) {
       this.showgraph = false
       this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
-      // axios.get(url).then(response => {
       if (this.time1 !== null && this.time2 !== null) {
-        UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
+        UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power).then(response => {
           if (this.graph_data === null) {
             console.log(response)
             this.graph_data = response.data.historic
@@ -153,18 +148,6 @@ export default {
         })
       }
     },
-    setGraphData () {
-      // Add to x,y axis, labels and dataset
-      let i = 0
-      for (i; i < this.graph_data.length; i++) {
-        this.y_axis.push(this.graph_data[i].value)
-        this.x_axis.push(this.graph_data[i].time)
-      }
-      this.x_axis.reverse() // puts x-axis in right order
-      this.content.datasets.push({ values: this.y_axis })
-      this.labels.push({ values: this.x_axis })
-      this.showgraph = true
-    },
     // Need to tidy up
     onChangeDate (event) {
       this.time.time1.date = this.changeNumber(this.time1.getDate())
@@ -178,8 +161,10 @@ export default {
       this.time.time2.year = this.time2.getFullYear()
       // var end = String(this.time.time2.year + '-' + this.time.time2.month + '-' + this.time.time2.date)
       this.time.end = String(this.time.time2.year + '-' + this.time.time2.month + '-' + this.time.time2.date)
-      this.setGraphData()
-      UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
+      // this.setGraphData()
+
+      console.log(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power)
+      UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
         // console.log(response.data.historic)
         if (this.graph_data == null) {
           this.graph_data = response.data.historic
@@ -192,8 +177,22 @@ export default {
           this.content.datasets = []
           this.graph_data = response.data.historic
         }
-        this.setGraphData()
+        if (this.time1 !== null && this.time2 !== null) {
+          this.setGraphData()
+        }
       })
+    },
+    setGraphData () {
+      // Add to x,y axis, labels and dataset
+      let i = 0
+      for (i; i < this.graph_data.length; i++) {
+        this.y_axis.push(this.graph_data[i].value)
+        this.x_axis.push(this.graph_data[i].time)
+      }
+      this.x_axis.reverse() // puts x-axis in right order
+      this.content.datasets.push({ values: this.y_axis })
+      this.labels.push({ values: this.x_axis })
+      this.showgraph = true
     },
     changeNumber (number) {
       if (number.toString().length === 1) {

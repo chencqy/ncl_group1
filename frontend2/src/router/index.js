@@ -54,6 +54,7 @@ router.beforeEach((to, from, next) => {
   console.log(loggedIn) // does this variable update?
   // trying to access a restricted page + not logged in
   // redirect to login page
+
   if (authRequired && !loggedIn) {
     next('/home')
   } else {
