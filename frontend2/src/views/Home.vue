@@ -27,6 +27,7 @@ export default {
   mounted () {
     UserService.getPublicContent().then(
       response => {
+        console.log(response)
         this.content = response.data.rooms
       },
       error => {

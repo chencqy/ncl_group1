@@ -16,11 +16,11 @@ export default {
     'app-header': Header,
     'app-footer': Footer
   },
-  computed: {
+  /* computed: {
     currentUser () {
       return this.$store.state.auth.user
-    }
-    /* showAdminBoard () {
+    } */
+  /* showAdminBoard () {
       if (this.currentUser && this.currentUser.roles) {
         return this.currentUser.roles.includes('ROLE_ADMIN')
       }
@@ -33,8 +33,8 @@ export default {
       }
 
       return false
-    } */
-  },
+    }
+  }, */
   methods: {
     logOut () {
       this.$store.dispatch('auth/logout')

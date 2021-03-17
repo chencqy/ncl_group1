@@ -161,11 +161,11 @@ export default {
         this.x_axis.push(this.graph_data[i].time)
       }
       this.x_axis.reverse() // puts x-axis in right order
-      // add if statemtent here for if graph data is empty?
       this.content.datasets.push({ values: this.y_axis })
       this.labels.push({ values: this.x_axis })
       this.showgraph = true
     },
+    // Need to tidy up
     onChangeDate (event) {
       this.time.time1.date = this.changeNumber(this.time1.getDate())
       this.time.time1.month = this.changeNumber(this.time1.getMonth().valueOf() + 1)
