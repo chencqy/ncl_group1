@@ -19,7 +19,7 @@ class UserService {
     return axios.get(API_URL + 'api/student/get_default_rooms', { headers: authHeader() })
   }
 
-  getResearcherBoard () {
+  getResearchBoard () {
     return axios.get(API_URL + 'api/researcher/get_default_rooms', { headers: authHeader() })
   }
 
@@ -33,20 +33,22 @@ class UserService {
   // NEED TO EDIT - Add role
   getRoomMetric (room, metric, start, end) {
     // var endpoint = '/sensors/timeseries/' + room + '/' + metric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
-    // need to change to include role
-    var endpoint = 'get_timeseries/' + room + '/' + metric + '/' + start + '/' + end
+    console.log('APPROVED')
+    var role = 'admin'
+    var endpoint = 'api/' + role + '/get_timeseries/' + room + '/' + metric + '/' + start + '/' + end
     console.log(API_URL + endpoint)
-    return axios.get(API_URL + endpoint)
+    return axios.get(API_URL + endpoint, { headers: authHeader() })
   }
 
   // Run when Dashboard.vue is loaded after login
   runBoard (power) {
     if (power === 'ROLE_BuildingManager,') {
-      this.getAdminBoard()
+      return 'admin'
     } else if (power === 'ROLE_Researcher') {
-      this.getResearcherBoard()
+      return 'research'
     } else if (power === 'ROLE_Student') {
       this.getStudentBoard()
+      return 'student'
     }
   }
 }

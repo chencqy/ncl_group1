@@ -1,15 +1,19 @@
 <template>
     <div class="dashboard">
         <b-container>
-            <b-row cols="4">
+            <b-row cols="1">
                 <b-col>{{currentUser.user.power}}</b-col>
-                <b-col>Column</b-col>
-                <b-col>Column</b-col>
-                <b-col>Column</b-col>
-                <b-col>Column</b-col>
-                <b-col>Column</b-col>
-                <b-col>Column</b-col>
-                <b-col>Column</b-col>
+                <b-col>
+                  <b-card
+                    :title="room"
+                    v-for="(room,index) in content" :key="index">
+                    <b-card-text>
+                      {{room}}
+                    </b-card-text>
+
+                    <b-button href="#" variant="primary">Go somewhere</b-button>
+                  </b-card>
+                </b-col>
             </b-row>
         </b-container>
   </div>
@@ -32,21 +36,6 @@ export default {
     currentUser () {
       return this.$store.state.auth.user
     }
-    /* showAdminBoard () {
-      if (this.currentUser && this.currentUser.user.power) {
-      }
-      return false
-    },
-    showResearcherBoard () {
-      if (this.currentUser && this.currentUser.user.power) {
-      }
-      return false
-    },
-    showStudentBoard () {
-      if (this.currentUser && this.currentUser.user.power) {
-      }
-      return false
-    } */
   },
   // Add logout button?
   methods: {
@@ -54,29 +43,42 @@ export default {
       this.$store.dispatch('auth/logout')
       this.$router.push('/login')
     },
-    loadDashboard(role){
-      UserService.runBoard(role).then(
-        response => {
-          console.log(response)
-          this.content = response.data
-
-        },
-        error => {
-          this.content =
-            (error.response && error.response.data) ||
-            error.message ||
-            error.toString()
-        }
-      )
+    showStudentBoard () {
+      if (this.currentUser && this.currentUser.user.power.includes('ROLE_Student,')) {
+        UserService.getStudentBoard().then(
+          response => {
+            console.log(response.data.student)
+            this.content = response.data.student
+          } 
+        ) 
+      }
+    },
+    showResearchBoard () {
+      if (this.currentUser && this.currentUser.user.power.includes('ROLE_Researcher,')) {
+        UserService.getResearchBoard().then(
+          response => {
+            console.log(response.data.student)
+            this.content = response.data.researcher
+          } 
+        ) 
+      }
+    },
+    showAdminBoard () {
+      if (this.currentUser && this.currentUser.user.power.includes('ROLE_BuildingManager,')) {
+        UserService.getAdminBoard().then(
+          response => {
+            console.log(response.data.student)
+            this.content = response.data.admin
+          } 
+        ) 
+      }
     }
   },
   mounted() {
-    this.loadDashboard(this.currentUser.user.power)
+    this.showStudentBoard()
+    this.showResearchBoard()
+    this.showAdminBoard()
   }
-  // get power here then call user service?
-  /* async mounted () {
-    await this.loadDashboard()
-  } */
 }
 </script>
 
