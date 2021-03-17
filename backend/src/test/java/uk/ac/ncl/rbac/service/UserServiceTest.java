@@ -45,10 +45,12 @@ public class UserServiceTest {
     @Test
     public void testGetUserInfo() {
         System.out.println(("----- GetUserInfo method test ------"));
-        String account = "user2";
-        UserVo userVo = userService.getUserInfo(account);
-        System.out.println(userVo);
-        Assert.assertEquals(account, userVo.getAccount());
+        for (int i = 1; i < 5; i++) {
+            String account = "user" + i;
+            UserVo userVo = userService.getUserInfo(account);
+            System.out.println(userVo);
+        }
+
     }
 
     @Test
@@ -67,7 +69,7 @@ public class UserServiceTest {
         user.setPhoneNumber(phoneNumber);
         user.setPassword(password);
         String roleOfUser = "Member of Public";
-        userService.insertUser(user, roleOfUser);
+        //userService.insertUser(user, roleOfUser);
 
     }
 }
