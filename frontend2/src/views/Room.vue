@@ -95,6 +95,7 @@ export default {
   methods: {
     // Load room names from CSV file, stored in rooms.data
     createInput () {
+      // edit to default rooms for user role? or just have room.vue for admin only
       var url = 'https://raw.githubusercontent.com/tomrob1/Prototype/main/src/assets/allTheRooms.json'
       // Temporary fix
       axios({
@@ -117,7 +118,10 @@ export default {
     onChangeRoom (event) {
       var res = event.target.value.replaceAll(' ', '-').toLowerCase()
       this.apiRoom = res
+      // edit to default rooms for user role? or just have room.vue for admin only
+      // /api/{​role}​/get_data/{​room}
       var url = 'http://18.132.43.65:8090/get_data/' + res
+
       console.log(url)
       axios.get(url)
         .then(response => {
@@ -130,10 +134,6 @@ export default {
     onChangeMetric (event) {
       this.showgraph = false
       this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
-      // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + this.apiMetric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
-      // need to parse date/month so that single digit is souble eg 04
-      // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + res + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
-      // 2019-05-27
       // axios.get(url).then(response => {
       if (this.time1 !== null && this.time2 !== null) {
         UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {

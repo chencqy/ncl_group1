@@ -30,8 +30,7 @@ class UserService {
   }
 
   // var url = 'https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/' + this.apiRoom + '/' + this.apiMetric + '/raw/historic?startTime=' + this.time1.getFullYear() + '-' + this.time1.getMonth() + '-' + this.time1.getDate() + 'T00:00:00Z&endTime=' + this.time2.getFullYear() + '-' + this.time2.getMonth() + '-' + this.time2.getDate() + 'T23:59:59'
-  // NEED TO EDIT - Add role 
-  // /api/{​role}​/get_timeseries/{​role}​/{​room}​/{​metric}​/{​start}​/{​end}​
+  // NEED TO EDIT - Add role
   getRoomMetric (room, metric, start, end) {
     // var endpoint = '/sensors/timeseries/' + room + '/' + metric + '/raw/historic?startTime=2019-05-27T00:00:00Z&endTime=2019-05-29T23:59:59'
     // need to change to include role
@@ -48,7 +47,7 @@ class UserService {
       this.getResearcherBoard()
     } else if (power === 'ROLE_Student') {
       this.getStudentBoard()
-    } 
+    }
   }
 }
 

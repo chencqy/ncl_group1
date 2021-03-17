@@ -86,7 +86,7 @@ export default {
         if (this.user.username && this.user.password) {
           this.$store.dispatch('auth/login', this.user).then(
             () => {
-              this.$router.push('/dashboard')
+              this.$router.push('/home')
               console.log('logged')
             },
             error => {
