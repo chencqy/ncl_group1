@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.ncl.rbac.entityApi.Entry;
@@ -23,21 +23,6 @@ import uk.ac.ncl.rbac.entityApi.Timeseries;
 public class ApiService {
 	
 	
-	public  HashMap<String,Object> getDfaultRooms (){
-		HashMap<String,Object> editedJson = new HashMap<String,Object>();
-		List<HashMap<String,Object>> defaultRoomList = new ArrayList<HashMap<String,Object>>() ;
-
-		defaultRoomList.add(getRoom("public","Floor-G-Room-G.071-Zone-3"));
-		defaultRoomList.add(getRoom("public","Floor-G-Room-G.063"));
-		defaultRoomList.add(getRoom("public","Floor-G-Room-G.062"));
-		defaultRoomList.add(getRoom("public","Floor-G-Room-G.003"));
-		editedJson.put("rooms",defaultRoomList);
-		return editedJson;
-		
-	}
-	
-	
-
 public  HashMap<String,Object> getDfaultRoomsByRole(String role){
 	String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
 	HashMap<String,Object> editedJson = new HashMap<String,Object>();
@@ -46,7 +31,6 @@ public  HashMap<String,Object> getDfaultRoomsByRole(String role){
 	List <String> adminRooms = new ArrayList<String>();
 	try {
 		jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class); 
-
 
 		 switch (role) {
 		case "admin":
@@ -72,7 +56,6 @@ public  HashMap<String,Object> getDfaultRoomsByRole(String role){
 			break;
 		}
 		 
-		System.out.println(editedJson);
 	}  catch (Exception e) {
 		editedJson.put("error","Not found");
 	}
@@ -81,24 +64,6 @@ public  HashMap<String,Object> getDfaultRoomsByRole(String role){
 	
 }
 
-
-	
-	
-	
-	public HashMap<String,Object> getRoomsForEachRole(){
-		HashMap<String,Object> editedJson = new HashMap<String,Object>();
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			JsonRooms JsonRooms =  mapper.readValue( "../uk.ac.ncl.rbac.jsonFile/Rooms.json", JsonRooms.class);
-			
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}   
-		
-		return editedJson;
-		
-	}
 	
 	
 	public HashMap<String,Object> getRoom (String role,String room){
