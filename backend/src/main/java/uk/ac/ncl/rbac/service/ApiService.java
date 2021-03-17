@@ -42,7 +42,7 @@ public class ApiService {
 					return true;
 				}
 				
-				if(role.equalsIgnoreCase("resercher")) {
+				if(role.equalsIgnoreCase("researcher")) {
 					return Customizedcontains(jsonRooms.getResearcher(),replacedRoom);
 				}
 					
