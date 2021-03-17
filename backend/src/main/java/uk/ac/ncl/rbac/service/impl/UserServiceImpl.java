@@ -97,10 +97,10 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(user);
         int roleId = 0;
         switch (roleOfUser) {
-            case "Building Manager" : roleId = 1;break;
-            case "Researcher" : roleId = 2;break;
-            case "Student" : roleId = 3;break;
-            case "Member of Public" : roleId = 4;break;
+            case "ROLE_BuildingManager" : roleId = 1;break;
+            case "ROLE_Researcher" : roleId = 2;break;
+            case "ROLE_Student" : roleId = 3;break;
+            case "ROLE_MemberOfPublic" : roleId = 4;break;
         }
         if (roleId == 0) {
             logger.warn("Role is invalid");

@@ -39,7 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final static String[] PERMIT_ALL_MAPPING = {
             "/api/login",
-            "/api/home"
+            "/api/home",
+            "/user/register"
     };
 
     public WebSecurityConfig(LoginCountService loginCountService) {
@@ -56,7 +57,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         List<String> allowedOriginsUrl = new ArrayList<>();
         allowedOriginsUrl.add("http://18.132.43.65:8090");
+        allowedOriginsUrl.add("http://18.132.43.65:8080");
         allowedOriginsUrl.add("http://localhost:8090");
+        allowedOriginsUrl.add("http://localhost:8080");
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(allowedOriginsUrl);

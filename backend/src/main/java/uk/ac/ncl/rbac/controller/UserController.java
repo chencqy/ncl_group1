@@ -41,4 +41,17 @@ public class UserController {
         UserVo userVo = userService.getUserInfo(account);
         return userVo == null ? Result.fail(ResultCode.USER_NOT_EXIST) : Result.success(userVo);
     }
+
+    @PostMapping("/register")
+    public JsonResult register(@RequestParam(value = "username") String account,
+                               @RequestParam(value = "email") String email,
+                               @RequestParam(value = "password") String password,
+                               @RequestParam(value = "role") String role) {
+        User user = new User();
+        user.setAccount(account);
+        user.setUserEmail(email);
+        user.setPassword(password);
+        userService.insertUser(user, role);
+        return Result.success();
+    }
 }
