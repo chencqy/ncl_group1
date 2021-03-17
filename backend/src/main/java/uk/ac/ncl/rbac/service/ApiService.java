@@ -21,195 +21,252 @@ import uk.ac.ncl.rbac.entityApi.Timeseries;
 
 @Service("apiService")
 public class ApiService {
-	
-	
-public  HashMap<String,Object> getDfaultRoomsByRole(String role){
-	String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
-	HashMap<String,Object> editedJson = new HashMap<String,Object>();
-	ObjectMapper mapper = new ObjectMapper();
-	JsonRooms jsonRooms;
-	List <String> adminRooms = new ArrayList<String>();
-	try {
-		jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class); 
 
-		 switch (role) {
-		case "admin":
-			adminRooms.addAll(jsonRooms.getAdmin());
-			adminRooms.addAll(jsonRooms.getResearcher());
-			adminRooms.addAll(jsonRooms.getStudent());
-			adminRooms.addAll(jsonRooms.getPublicUser());
-			
-			editedJson.put("admin",adminRooms);
-			break;
-		case "researcher":
-			editedJson.put("researcher",jsonRooms.getResearcher());
-			break;
-		case "student":
-			editedJson.put("student",jsonRooms.getStudent());
-			break;
-		case "public":
-			editedJson.put("public",jsonRooms.getPublicUser());
-			break;
 
-		default:
-			editedJson.put("error","Permission denied");
-			break;
+
+	public boolean Customizedcontains(List<String> list, String room) {
+		for (String s : list) {
+			if (s.equalsIgnoreCase(room)) return true;
 		}
-		 
-	}  catch (Exception e) {
-		editedJson.put("error","Not found");
+		return false;
 	}
-	
-	return editedJson;
-	
-}
+
+	public boolean PermissionCheck(String role,String room) {
+		if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student") || role.equalsIgnoreCase("researcher") || role.equalsIgnoreCase("public")) {
+			ObjectMapper mapper = new ObjectMapper();
+			String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
+
+			try {
+				JsonRooms jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class);
+
+				String replacedRoom = room.replace("-", "");
+				switch (role) {
+				case "researcher":
+					if(!Customizedcontains(jsonRooms.getResearcher(),replacedRoom)){
+						return false;
+					}
+					break;
+
+				case "student":
+					if(!Customizedcontains(jsonRooms.getStudent(),replacedRoom)){
+						return false;
+					}
+					break;
+
+				case "public":
+					if(!Customizedcontains(jsonRooms.getPublicUser(),replacedRoom)){
+						return false;
+					}
+					break;
+				default:
+					break;
+				}
+
+			} catch (Exception e) {
+				return false;
+			} 
+			return true;
+
+		}else {
+			return false;
+		}
+	}
 
 	
-	
-	public HashMap<String,Object> getRoom (String role,String room){
-		
+
+
+
+
+
+
+
+	public  HashMap<String,Object> getDfaultRoomsByRole(String role){
+		String filePath = new File("").getAbsolutePath()+"/src/main/java/uk/ac/ncl/rbac/jsonFile/Rooms.json";
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
-		
-		if(role ==  "admin" || role == "student" || role == "researcher" || role =="public") {
-			
+		ObjectMapper mapper = new ObjectMapper();
+		JsonRooms jsonRooms;
+		List <String> adminRooms = new ArrayList<String>();
+		try {
+			jsonRooms =  mapper.readValue(new FileReader(filePath), JsonRooms.class); 
+
+			switch (role) {
+			case "admin":
+				adminRooms.addAll(jsonRooms.getAdmin());
+				adminRooms.addAll(jsonRooms.getResearcher());
+				adminRooms.addAll(jsonRooms.getStudent());
+				adminRooms.addAll(jsonRooms.getPublicUser());
+
+				editedJson.put("admin",adminRooms);
+				break;
+			case "researcher":
+				editedJson.put("researcher",jsonRooms.getResearcher());
+				break;
+			case "student":
+				editedJson.put("student",jsonRooms.getStudent());
+				break;
+			case "public":
+				editedJson.put("public",jsonRooms.getPublicUser());
+				break;
+
+			default:
+				editedJson.put("error","Permission denied");
+				break;
+			}
+
+		}  catch (Exception e) {
+			editedJson.put("error","Not found");
+		}
+
+		return editedJson;
+
+	}
+
+
+
+	public HashMap<String,Object> getRoom (String role,String room){
+
+		HashMap<String,Object> editedJson = new HashMap<String,Object>();
+
+		if(PermissionCheck(role,room)) {
+
 			List<HashMap<String,Object>> metrics = new ArrayList<HashMap<String,Object>>();
 			ObjectMapper mapper = new ObjectMapper();
 			String url = "https://api.usb.urbanobservatory.ac.uk/api/v2.0a/sensors/entity/"+room;
-			 
-			 URL urlRequest;
-			 BufferedReader br;
-			 StringBuilder sb = new StringBuilder();
-			 HttpURLConnection urlConnection;
-			 boolean success = false;
-			 while(!success) {
-			
-			try {
-			       Entry jsonEntry;   
-		           HashMap<String,Object>  metric;
-		         
-		           
-		      	  urlRequest = new URL(url);
 
-			       urlConnection = (HttpURLConnection) urlRequest.openConnection();
-			       urlConnection.setRequestMethod("GET"); 
-			       urlConnection.setConnectTimeout(10000); 
-			       urlConnection.setReadTimeout(10000);
-			       if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			    	      success = true;
-						  br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-					      String line;
-					      while ((line = br.readLine()) != null) {
-					      sb.append(line).append("\n");
-					      }
-					      br.close();	
-					      jsonEntry =  mapper.readValue(sb.toString(), Entry.class); 
-					
-					  
-				           for(int i=0; i<jsonEntry.getFeed().size();i++) {
-				            	 metric = new HashMap<String,Object>();
-				           	  	 metric.put("name",jsonEntry.getFeed().get(i).getMetric());
-				       		     metric.put("value",jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest()==null ? null : jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest().getValue() );	
-				       		     metrics.add(metric);
-				            }
-				            
-				            editedJson.put("name", jsonEntry.getName());  
-				            editedJson.put("metrics", metrics);
-			  } 
-		           
-		          
-		            
-		            
-			} catch (Exception e) {
-				editedJson.put("error", "Not Found");
-				return editedJson;
-				
-				
+			URL urlRequest;
+			BufferedReader br;
+			StringBuilder sb = new StringBuilder();
+			HttpURLConnection urlConnection;
+			boolean success = false;
+			while(!success) {
+
+				try {
+					Entry jsonEntry;   
+					HashMap<String,Object>  metric;
+
+
+					urlRequest = new URL(url);
+
+					urlConnection = (HttpURLConnection) urlRequest.openConnection();
+					urlConnection.setRequestMethod("GET"); 
+					urlConnection.setConnectTimeout(10000); 
+					urlConnection.setReadTimeout(10000);
+					if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+						success = true;
+						br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+						String line;
+						while ((line = br.readLine()) != null) {
+							sb.append(line).append("\n");
+						}
+						br.close();	
+						jsonEntry =  mapper.readValue(sb.toString(), Entry.class); 
+
+
+						for(int i=0; i<jsonEntry.getFeed().size();i++) {
+							metric = new HashMap<String,Object>();
+							metric.put("name",jsonEntry.getFeed().get(i).getMetric());
+							metric.put("value",jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest()==null ? null : jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest().getValue() );	
+							metrics.add(metric);
+						}
+
+						editedJson.put("name", jsonEntry.getName());  
+						editedJson.put("metrics", metrics);
+					} 
+
+
+
+
+				} catch (Exception e) {
+					editedJson.put("error", "Not Found");
+					return editedJson;
+
+
+				}
 			}
-		}
 
-			
+
 		}else {
 			editedJson.put("error", "Permission denied");
 		}
-		
-		
-		
-	
+
+
+
+
 
 		return editedJson;
-		      
+
 	}
-	
-	
-	
-	
+
+
+
+
 	public HashMap<String,Object> getTimeseries (String role,String room,String metric,String start,String end){
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
-		
-		if(role ==  "admin" || role == "student" || role == "researcher" || role=="public") {
-				
+
+		if(PermissionCheck(role,room)) {
+
 			List<HashMap<String,Object>> values = new ArrayList<HashMap<String,Object>>();
 			String url = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/"+room+"/"+metric+"/raw/historic?startTime="+start+"T00:00:00Z&endTime="+end+"T23:59:59";
 			ObjectMapper mapper = new ObjectMapper();
 			Timeseries jsonTimeSeries;
-			 
-			 URL urlRequest;
-			 BufferedReader br;
-			 StringBuilder sb = new StringBuilder();
-			 HttpURLConnection urlConnection;
-			 boolean success = false;
-			 
-			 while(!success) {
-				 try {
-					 urlRequest = new URL(url);
 
-				       urlConnection = (HttpURLConnection) urlRequest.openConnection();
-				       urlConnection.setRequestMethod("GET"); 
-				       urlConnection.setConnectTimeout(10000); 
-				       urlConnection.setReadTimeout(10000);
-				       if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				    	      success = true;
-							  br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-						      String line;
-						      while ((line = br.readLine()) != null) {
-						      sb.append(line).append("\n");
-						      }
-						      br.close();	
+			URL urlRequest;
+			BufferedReader br;
+			StringBuilder sb = new StringBuilder();
+			HttpURLConnection urlConnection;
+			boolean success = false;
 
-						      jsonTimeSeries =  mapper.readValue(sb.toString(), Timeseries.class); 
-						       HashMap<String,Object>  value;
-						        for(int i=0; i<jsonTimeSeries.gethistoric().getValues().size();i++) {
-						        	 value = new HashMap<String,Object>();
-						       	  	 value.put("time",jsonTimeSeries.gethistoric().getValues().get(i).getTime());
-						   		     value.put("value",jsonTimeSeries.gethistoric().getValues().get(i).getValue());	
-						   		     values.add(value);
-						        }
-						        editedJson.put("name", room); 
-						        editedJson.put("metric", metric); 
-						        editedJson.put("start", start);
-						        editedJson.put("end", end);
-						        editedJson.put("historic", values);
-							
-				  } 
-				       
+			while(!success) {
+				try {
+					urlRequest = new URL(url);
+
+					urlConnection = (HttpURLConnection) urlRequest.openConnection();
+					urlConnection.setRequestMethod("GET"); 
+					urlConnection.setConnectTimeout(10000); 
+					urlConnection.setReadTimeout(10000);
+					if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+						success = true;
+						br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+						String line;
+						while ((line = br.readLine()) != null) {
+							sb.append(line).append("\n");
+						}
+						br.close();	
+
+						jsonTimeSeries =  mapper.readValue(sb.toString(), Timeseries.class); 
+						HashMap<String,Object>  value;
+						for(int i=0; i<jsonTimeSeries.gethistoric().getValues().size();i++) {
+							value = new HashMap<String,Object>();
+							value.put("time",jsonTimeSeries.gethistoric().getValues().get(i).getTime());
+							value.put("value",jsonTimeSeries.gethistoric().getValues().get(i).getValue());	
+							values.add(value);
+						}
+						editedJson.put("name", room); 
+						editedJson.put("metric", metric); 
+						editedJson.put("start", start);
+						editedJson.put("end", end);
+						editedJson.put("historic", values);
+
+					} 
+
 				} catch (Exception e) {
 					editedJson.put("error", "Unable to provide data within a sensible timeframe. Try requesting less data (QueryTimeout)" );
-					 url = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/"+room+"/"+metric+"/raw/historic?startTime="+start+"T00:00:00Z&endTime="+start+"T23:59:59";
+					url = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/"+room+"/"+metric+"/raw/historic?startTime="+start+"T00:00:00Z&endTime="+start+"T23:59:59";
 				}
-			 }
+			}
 
 
-			
+
 		}else {
-			
+
 			editedJson.put("error", "Permission denied");
 
 		}
-	
-	
-		
-			return editedJson;    
-			 
-		
+
+
+
+		return editedJson;    
+
+
 	}
 }
