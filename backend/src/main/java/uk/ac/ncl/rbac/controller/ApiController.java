@@ -21,24 +21,32 @@ public class ApiController {
         this.apiService = apiService;
     }
     
-    @GetMapping("/get_default_rooms")
-	public HashMap<String, Object> getDefaultRooms() {
-		return apiService.getDfaultRooms();
+    
+
+    @GetMapping("/api/{role}/get_default_rooms")
+	public HashMap<String, Object> getDefaultRoomsByRole(@PathVariable("role") String role) {
+		return apiService.getDfaultRoomsByRole(role);
 	}
     
-	 @GetMapping("/get_data/{room}")
-	 	public HashMap<String,Object> getData(@PathVariable("room") String room) {	  
-		return apiService.getRoom(room);
+    
+	 @GetMapping("/api/{role}/get_data/{room}")
+	 	public HashMap<String,Object> getData(
+	 			@PathVariable("role") String role,
+	 			@PathVariable("room") String room
+	 			) 
+	 {	  
+		return apiService.getRoom(role,room);
 	 }
 	 
-	 @GetMapping("/get_timeseries/{room}/{metric}/{start}/{end}")
+	 @GetMapping("/api/{role}/get_timeseries/{role}/{room}/{metric}/{start}/{end}")
 	 	public HashMap<String,Object> getTimeseries(
+	 			@PathVariable("role") String role,
 	 			@PathVariable("room") String room,
 	 			@PathVariable("metric") String metric,
 	 			@PathVariable("start") String start,
 	 			@PathVariable("end") String end
 	 			) 
 	 {	  
-		return apiService.getTimeseries(room,metric,start,end);
+		return apiService.getTimeseries(role,room,metric,start,end);
 	 }
 }
