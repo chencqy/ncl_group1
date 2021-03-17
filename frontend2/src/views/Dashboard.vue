@@ -1,7 +1,7 @@
 <template>
     <div class="dashboard">
         <b-container>
-            <b-row cols="1">
+            <b-row>
                 <b-col>{{currentUser.user.power}}</b-col>
                 <b-col>
                   <b-card
@@ -11,7 +11,7 @@
                       {{room}}
                     </b-card-text>
 
-                    <b-button href="#" variant="primary">Go somewhere</b-button>
+                    <b-button v-on:click="buttonClick(room)" variant="primary">Go somewhere</b-button>
                   </b-card>
                 </b-col>
             </b-row>
@@ -72,6 +72,18 @@ export default {
           } 
         ) 
       }
+    },
+    buttonClick(room){
+      var fix = room.replaceAll(' ', '-').toLowerCase()
+      console.log(fix)
+      var role = UserService.getRole(this.currentUser.user.power)
+      console.log(this.currentUser.user.power)
+      console.log(role)
+        UserService.getRoomMetric(fix , role).then(
+          response => {
+            console.log(response)
+          } 
+        )
     }
   },
   mounted() {

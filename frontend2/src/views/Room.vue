@@ -119,19 +119,11 @@ export default {
     },
     // tidy up
     onChangeRoom (event) {
-      var res = event.target.value.replaceAll(' ', '-').toLowerCase()
-      this.apiRoom = res
-      // edit to default rooms for user role? or just have room.vue for admin only
-      // var url = 'http://18.132.43.65:8090/get_data/' + res
-      var url = 'http://18.132.43.65:8090/api/admin/get_data/' + res
-
-      console.log(url)
-      axios.get(url)
-        .then(response => {
-          // console.log(response)
-          this.metrics = response.data.metrics
-          // this.metrics = response.data.metircs
-        })
+      this.apiRoom = event.target.value.replaceAll(' ', '-').toLowerCase()
+      var role = UserService.getRole(this.currentUser.power)
+      UserService.getRoomMetric(this.apiRoom, role).then(response => {
+        this.metrics = response.data.metrics
+      })
     },
     // Need to change room value to fit USB uni api
     // room-6.025
@@ -139,7 +131,7 @@ export default {
       this.showgraph = false
       this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
       if (this.time1 !== null && this.time2 !== null) {
-        UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power).then(response => {
+        UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power).then(response => {
           if (this.graph_data === null) {
             console.log(response)
             this.graph_data = response.data.historic
@@ -172,7 +164,7 @@ export default {
       // this.setGraphData()
 
       console.log(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power)
-      UserService.getRoomMetric(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
+      UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
         // console.log(response.data.historic)
         if (this.graph_data == null) {
           this.graph_data = response.data.historic
