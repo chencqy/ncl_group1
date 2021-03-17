@@ -45,7 +45,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserInfo() {
         System.out.println(("----- GetUserInfo method test ------"));
-        String account = "testUser";
+        String account = "user2";
         UserVo userVo = userService.getUserInfo(account);
         System.out.println(userVo);
         Assert.assertEquals(account, userVo.getAccount());

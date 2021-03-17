@@ -40,7 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final static String[] PERMIT_ALL_MAPPING = {
             "/api/login",
             "/api/home",
-            "/user/register"
+            "/api/public/**",
+            "/api/user/**"
     };
 
     public WebSecurityConfig(LoginCountService loginCountService) {
@@ -75,10 +76,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(PERMIT_ALL_MAPPING)
                 .permitAll()
-                .antMatchers("/api/home", "/api/login", "/api/logout")
-                .hasAnyAuthority(USER, RESEARCHER, STUDENT, ADMIN)
-                .antMatchers("/api/user/**")
-                .hasAnyAuthority(USER)
                 .antMatchers("/api/student/**")
                 .hasAnyAuthority(STUDENT)
                 .antMatchers("/api/researcher/**")
