@@ -34,8 +34,8 @@ class UserService {
     return axios.get(API_URL + endpoint, { headers: authHeader() })
   }
 
-  getRoomMetric (room, role) {
-    var endpoint = 'api/' + role + '/get_data/' + room
+  getRoomMetric (room) {
+    var endpoint = 'api/' + 'admin' + '/get_data/' + room
     return axios.get(API_URL + endpoint, { headers: authHeader() })
   }
 

@@ -120,8 +120,9 @@ export default {
     // tidy up
     onChangeRoom (event) {
       this.apiRoom = event.target.value.replaceAll(' ', '-').toLowerCase()
-      var role = UserService.getRole(this.currentUser.power)
-      UserService.getRoomMetric(this.apiRoom, role).then(response => {
+      // var role = UserService.getRole(this.currentUser.power)
+      UserService.getRoomMetric(this.apiRoom).then(response => {
+        console.log(response)
         this.metrics = response.data.metrics
       })
     },
