@@ -4,8 +4,8 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/room">Room</router-link> |
       <router-link to="/dashboard">Dashboard</router-link> |
-      <router-link to="/login">Login</router-link> | | |
-      <button v-on:click="logOut()"> Logout</button>
+      <router-link to="/login">Login</router-link> <br>
+      <b-button v-on:click="logOut()" variant="outline-primary">Logout</b-button>
     </div>
   </nav>
 </template>
@@ -15,9 +15,17 @@ export default {
     logOut () {
       this.$store.dispatch('auth/logout')
       this.$router.push('/login')
+    },
+    computed: {
+      currentUser () {
+        return this.$store.state.auth.user
+      }
     }
   }
 }
 </script>
 <style>
+#nav{
+background-color:#42b98370;
+}
 </style>

@@ -11,8 +11,9 @@
                       <b-card-text>
                         {{room}}
                         <p>{{metrics}}</p>
+                        <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
                       </b-card-text>
-                      <b-button v-on:click="buttonClick(room)" variant="primary">Go somewhere</b-button>
+                      <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
                     </b-card>
                   </b-card>
                 </b-col>
@@ -90,17 +91,6 @@ export default {
           response => {
             console.log(response)
             this.metrics = response.data.metrics
-            let i = 0
-            // Filter metrics and remove null values
-            // use .filter method?
-            for (i ; i < this.metrics.length; i++){
-              if (this.metrics[i].value === null){
-                console.log('splice')
-                // delete this.metrics[i]
-                this.metrics.splice(i,i)
-                // this.metrics = 
-              }
-            } 
           } 
         )
     }
