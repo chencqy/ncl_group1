@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 import UserService from '../services/user.service'
@@ -98,20 +98,10 @@ export default {
   methods: {
     // Load room names from CSV file, stored in rooms.data
     createInput () {
-      // edit to default rooms for user role? or just have room.vue for admin only
-      var url = 'https://raw.githubusercontent.com/tomrob1/Prototype/main/src/assets/allTheRooms.json'
-      // Temporary fix
-      axios({
-        method: 'get',
-        url: url,
-        withCredentials: false
-      }).then(response => {
-        this.rooms = response.data
+      UserService.getAdminBoard().then(response => {
+        console.log(response)
+        this.rooms = response.data.admin
       })
-      /* axios.get(url)
-        .then(response => {
-          this.rooms = response.data
-        }) */
     },
     // When select option changes, cut array ro return rooms
     onChangeFloor (event) {
