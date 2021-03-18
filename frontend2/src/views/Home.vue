@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <br>
-    <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
+      <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
     <br>
     <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
     <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
@@ -35,7 +35,7 @@ export default {
       console.log(role)
       UserService.getRoomMetric(fix, role).then(
         response => {
-          console.log(response)
+          console.log(response.data.metrics)
           this.metrics = response.data.metrics
         }
       )
@@ -44,7 +44,6 @@ export default {
   mounted () {
     UserService.getPublicContent().then(
       response => {
-        console.log(response)
         this.content = response.data.public
       },
       error => {

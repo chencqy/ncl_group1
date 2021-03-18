@@ -1,17 +1,16 @@
 <template>
     <div class="dashboard">
+        <br>
+        <br>
         <b-container>
             <b-row>
                 <b-col>
-                  {{this.currentUser.user.power}}
+                  <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
                   <b-card>
                     <b-card
                       :title="room"
                       v-for="(room,index) in content" :key="index">
                       <b-card-text>
-                        {{room}}
-                        <p>{{metrics}}</p>
-                        <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
                       </b-card-text>
                       <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
                     </b-card>
@@ -89,7 +88,7 @@ export default {
       console.log(role)
         UserService.getRoomMetric(fix , role).then(
           response => {
-            console.log(response)
+            console.log(response.data.metrics)
             this.metrics = response.data.metrics
           } 
         )

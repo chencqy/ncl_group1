@@ -15,11 +15,6 @@ export default {
     logOut () {
       this.$store.dispatch('auth/logout')
       this.$router.push('/login')
-    },
-    computed: {
-      currentUser () {
-        return this.$store.state.auth.user
-      }
     }
   }
 }
