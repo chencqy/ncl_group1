@@ -34,20 +34,21 @@ class UserService {
     return axios.get(API_URL + endpoint, { headers: authHeader() })
   }
 
-  getRoomMetric (room) {
-    var endpoint = 'api/' + 'admin' + '/get_data/' + room
+  getRoomMetric (room, role) {
+    var endpoint = 'api/' + role + '/get_data/' + room
     return axios.get(API_URL + endpoint, { headers: authHeader() })
   }
 
   // Run when Dashboard.vue is loaded after login
   getRole (role) {
     if (role.includes('ROLE_BuildingManager,')) {
-      return 'admin'
+      role = 'admin'
     } else if (role.includes('ROLE_Researcher,')) {
-      return 'researcher'
+      role = 'researcher'
     } else if (role.includes('ROLE_Student,')) {
-      return 'student'
-    } else return 'ERROR'
+      role = 'student'
+    } else role = 'ERROR'
+    return role
   }
 }
 
