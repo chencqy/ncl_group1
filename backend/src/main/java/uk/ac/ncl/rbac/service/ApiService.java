@@ -1,13 +1,15 @@
 package uk.ac.ncl.rbac.service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 
@@ -32,40 +34,39 @@ public class ApiService {
 	public boolean PermissionCheck(String role,String room) {
 		if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student") || role.equalsIgnoreCase("researcher") || role.equalsIgnoreCase("public")) {
 			ObjectMapper mapper = new ObjectMapper();
+			String url = "https://hsjo0914.github.io/JsonFile/Rooms.json";
 			try {
-				ClassPathResource classPathResource = new ClassPathResource("/static/Rooms.json");
-				InputStream inputStream = classPathResource.getInputStream();
-				JsonRooms jsonRooms =  mapper.readValue(inputStream, JsonRooms.class);
+				JsonRooms jsonRooms =  mapper.readValue(new URL(url), JsonRooms.class);
 				String replacedRoom = room.replace("-", "").trim();
-			
+
 				if(role.equalsIgnoreCase("admin")) {
 					return true;
 				}
-				
+
 				if(role.equalsIgnoreCase("researcher")) {
 					return Customizedcontains(jsonRooms.getResearcher(),replacedRoom);
 				}
-					
+
 				if(role.equalsIgnoreCase("student")) {
 					return Customizedcontains(jsonRooms.getStudent(),replacedRoom);
 				}
-					
+
 				if(role.equalsIgnoreCase("public")) {
 					return Customizedcontains(jsonRooms.getPublicUser(),replacedRoom);
 				}
-					
+
 				else {
 					return false;
 				}
-				
-				
-					
-				
+
+
+
+
 
 			} catch (Exception e) {
 				return false;
 			} 
-		
+
 
 		}else {
 			return false;
@@ -81,16 +82,15 @@ public class ApiService {
 
 
 	public  HashMap<String,Object> getDfaultRoomsByRole(String role){
+		String url = "https://hsjo0914.github.io/JsonFile/Rooms.json";
 		HashMap<String,Object> editedJson = new HashMap<String,Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		JsonRooms jsonRooms;
 		List <Object> adminRooms = new ArrayList<Object>();
 		try {
-			ClassPathResource classPathResource = new ClassPathResource("/static/Rooms.json");
-			InputStream inputStream = classPathResource.getInputStream();
-			jsonRooms =  mapper.readValue(inputStream, JsonRooms.class);
+			jsonRooms =  mapper.readValue(new URL(url), JsonRooms.class); 
 
-			
+
 
 			switch (role) {
 			case "admin":
@@ -117,7 +117,7 @@ public class ApiService {
 			}
 
 		}  catch (Exception e) {
-		
+
 			editedJson.put("error","Not found");
 		}
 
@@ -162,14 +162,16 @@ public class ApiService {
 							sb.append(line).append("\n");
 						}
 						br.close();	
+
 						jsonEntry =  mapper.readValue(sb.toString(), Entry.class); 
-
-
 						for(int i=0; i<jsonEntry.getFeed().size();i++) {
-							metric = new HashMap<String,Object>();
-							metric.put("name",jsonEntry.getFeed().get(i).getMetric());
-							metric.put("value",jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest()==null ? null : jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest().getValue() );	
-							metrics.add(metric);
+							if(jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest()!=null && jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest().getValue() !=0 ) {
+								metric = new HashMap<String,Object>();
+								metric.put("name",jsonEntry.getFeed().get(i).getMetric());
+								metric.put("value", jsonEntry.getFeed().get(i).getTimeseries().get(0).getLatest().getValue());	
+								metrics.add(metric);
+							}
+
 						}
 
 						editedJson.put("name", jsonEntry.getName());  
