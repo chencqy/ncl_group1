@@ -2,21 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="uk.ac.ncl.rbac.mapper.RoleMapper">
 
-    <resultMap type="uk.ac.ncl.rbac.common.entity.Role" id="RoleMap">
-        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
-        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
-    </resultMap>
+	<resultMap type="uk.ac.ncl.rbac.common.entity.Role"
+		id="RoleMap">
+		<result property="roleId" column="role_id" jdbcType="INTEGER" />
+		<result property="roleName" column="role_name"
+			jdbcType="VARCHAR" />
+	</resultMap>
 
-    <select id="listRolesByUserId" resultMap="RoleMap">
-        SELECT
-        r.role_id, r.role_name
-        FROM
-        user AS u
-        LEFT JOIN user_role AS ur
-        ON u.user_id = ur.user_id
-        LEFT JOIN role AS r
-        ON r.role_id = ur.role_id
-        WHERE u.user_id = #{userId}
-    </select>
+	<select id="listRolesByUserId" resultMap="RoleMap">
+		SELECT
+		r.role_id, r.role_name
+		FROM
+		user AS u
+		LEFT JOIN user_role AS ur
+		ON u.user_id = ur.user_id
+		LEFT JOIN role AS r
+		ON r.role_id = ur.role_id
+		WHERE u.user_id = #{userId}
+	</select>
 
 </mapper>
