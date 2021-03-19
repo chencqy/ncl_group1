@@ -1,17 +1,14 @@
 <template>
-  <div class="container">
-    <br>
-      <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
-    <br>
+  <div class="container"><br>
+     <span class="dataInf"><span v-for="(metric,index) in metrics" :key="index"><h5>{{metric.name}}: {{metric.value}}</h5></span></span>
     <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
     <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
-  <b-card
-    :title="room"
-    v-for="(room,index) in content" :key="index">
+  <b-card :title="room"
+    v-for="(room,index) in content" :key="index" class="col-4 d-inline-flex" style="margin:10px">
     <b-card-text>
+    <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
     </b-card-text>
-    <b-button  v-on:click="buttonClick(room)" variant="primary">Data</b-button>
-  </b-card>
+    </b-card>
   </div>
 </template>
 
@@ -68,7 +65,6 @@ export default {
 .logo img{
     width: 20%;
 }
-
 p{
   font-size:0.8rem;
   color:#000000;
