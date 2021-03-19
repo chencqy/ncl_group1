@@ -5,11 +5,13 @@
         <b-container>
             <b-row>
                 <b-col>
-                  <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
+                  <span class="dataInf"><span v-for="(metric,index) in metrics" :key="index"><h5>{{metric.name}}: {{metric.value}}</h5></span></span>
+                  <!--<tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>-->
                   <b-card>
                     <b-card
                       :title="room"
-                      v-for="(room,index) in content" :key="index">
+                      v-for="(room,index) in content" :key="index"
+                      class="col-4 d-inline-flex" style="margin:10px">
                       <b-card-text>
                       </b-card-text>
                       <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
