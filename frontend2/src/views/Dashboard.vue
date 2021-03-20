@@ -2,6 +2,7 @@
     <div class="dashboard">
         <br>
         <br>
+        <roomComp v-if="this.currentUser && this.currentUser.user.power.includes('ROLE_BuildingManager,')"></roomComp>
         <b-container>
             <b-row>
                 <b-col>
@@ -28,16 +29,19 @@
 // import { delete } from 'vue/types/umd'
 // import { response } from 'express'
 import UserService from '../services/user.service'
-
+import Room from '../components/room'
 /* eslint-disable */ 
 export default {
+  components: {
+    'roomComp': Room,
+  },
   name: 'Dashboard',
   data () {
     return {
       content: '',
       metrics: ''
     }
-  },
+  },  
   computed: {
     currentUser () {
       return this.$store.state.auth.user
