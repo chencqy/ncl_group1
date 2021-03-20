@@ -34,6 +34,7 @@ export default {
         response => {
           console.log(response.data.metrics)
           this.metrics = response.data.metrics
+          document.location.href = '#'
         }
       )
     }
