@@ -11,6 +11,10 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+import 'vue2-toast/lib/toast.css'
+import Toast from 'vue2-toast'
+
+Vue.use(Toast)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VuePapaParse)

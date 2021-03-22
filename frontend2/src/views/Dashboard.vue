@@ -100,6 +100,9 @@ export default {
         UserService.getRoomMetric(fix , role).then(
           response => {
             console.log(response.data.metrics)
+            if (response.data.metrics.length == 0 ){
+              this.$toast('No data to display');  // or this.$toast.bottom('bottom'); 
+            }
             this.metrics = response.data.metrics
           } 
         )
