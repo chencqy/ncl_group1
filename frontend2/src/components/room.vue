@@ -29,6 +29,7 @@
           </form>
           <date-picker v-model="time1" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>
           <date-picker v-model="time2" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>
+          <br>
             <b-row>
                 <b-col>
                 <vue-frappe v-if="showgraph"
@@ -42,6 +43,7 @@
                 ></vue-frappe>
                 </b-col>
             </b-row>
+            <br>
         </div>
 </template>
 
@@ -123,7 +125,8 @@ export default {
       this.showgraph = false
       this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
       if (this.time1 !== null && this.time2 !== null) {
-        UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power).then(response => {
+        var role = UserService.getRole(this.currentUser.user.power)
+        UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, role).then(response => {
           if (this.graph_data === null) {
             console.log(response)
             this.graph_data = response.data.historic
@@ -156,23 +159,26 @@ export default {
       // this.setGraphData()
 
       console.log(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power)
-      UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end).then(response => {
-        // console.log(response.data.historic)
-        if (this.graph_data == null) {
-          this.graph_data = response.data.historic
-        } else {
-          // need to clear up the variables used for the graph
-          this.graph_data = []
-          this.x_axis = []
-          this.y_axis = []
-          this.labels = []
-          this.content.datasets = []
-          this.graph_data = response.data.historic
-        }
-        if (this.time1 !== null && this.time2 !== null) {
-          this.setGraphData()
-        }
-      })
+      if (this.apiMetric !== null) {
+        var role = UserService.getRole(this.currentUser.user.power)
+        UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, role).then(response => {
+          // console.log(response.data.historic)
+          if (this.graph_data == null) {
+            this.graph_data = response.data.historic
+          } else {
+            // need to clear up the variables used for the graph
+            this.graph_data = []
+            this.x_axis = []
+            this.y_axis = []
+            this.labels = []
+            this.content.datasets = []
+            this.graph_data = response.data.historic
+          }
+          if (this.time1 !== null && this.time2 !== null) {
+            this.setGraphData()
+          }
+        })
+      }
     },
     setGraphData () {
       // Add to x,y axis, labels and dataset

@@ -11,7 +11,7 @@
                   <b-card>
                     <b-card
                       :title="room"
-                      v-for="(room,index) in content" :key="index"
+                      v-for="(room,index) in cardData" :key="index"
                       class="col-4 d-inline-flex" style="margin:10px">
                       <b-card-text>
                       </b-card-text>
@@ -45,9 +45,14 @@ export default {
   computed: {
     currentUser () {
       return this.$store.state.auth.user
+    },
+    cardData () {
+      if (this.currentUser.user.power.includes('ROLE_BuildingManager,')) {
+        return this.content.slice(8)
+      } else
+      return this.content
     }
   },
-  // Add logout button?
   methods: {
     logOut () {
       this.$store.dispatch('auth/logout')
