@@ -33,7 +33,10 @@ export default {
       UserService.getRoomMetric(fix, role).then(
         response => {
           console.log(response.data.metrics)
-          this.metrics = response.data.metrics
+          if (response.data.metrics.length === 0) {
+            this.$toast('No data to display')
+            this.metrics = ''
+          } else { this.metrics = response.data.metrics }
           document.location.href = '#'
         }
       )
