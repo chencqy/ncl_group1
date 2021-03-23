@@ -1,14 +1,23 @@
 <template>
   <div class="container"><br>
-     <span class="dataInf"><span v-for="(metric,index) in metrics" :key="index"><h5>{{metric.name}}: {{metric.value}}</h5></span></span>
-    <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
-    <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
-  <b-card :title="room"
-    v-for="(room,index) in content" :key="index" class="col-4 d-inline-flex" style="margin:10px">
-    <b-card-text>
-    <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
-    </b-card-text>
-    </b-card>
+     <table class="metricTable" v-if="display">
+      <tr>
+          <th>Metric</th>
+          <th>Value</th>
+      </tr>
+      <tr class="dataInf" v-for="(metric,index) in metrics" :key="index">
+        <td>{{metric.name}}</td>
+        <td>{{metric.value}}</td>
+      </tr>
+    </table>
+    <br>
+      <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
+      <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
+    <b-card :title="room" v-for="(room,index) in content" :key="index" class="col-4 d-inline-flex" style="margin:10px">
+      <b-card-text>
+        <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
+      </b-card-text>
+      </b-card>
   </div>
 </template>
 
@@ -20,7 +29,8 @@ export default {
   data () {
     return {
       content: '',
-      metrics: ''
+      metrics: '',
+      display: false
     }
   },
   methods: {
@@ -36,7 +46,11 @@ export default {
           if (response.data.metrics.length === 0) {
             this.$toast('No data to display')
             this.metrics = ''
-          } else { this.metrics = response.data.metrics }
+            this.display = false
+          } else {
+            this.metrics = response.data.metrics
+            this.display = true
+          }
           document.location.href = '#'
         }
       )
@@ -73,5 +87,26 @@ p{
   font-size:0.8rem;
   color:#000000;
   text-align:center
+}
+
+.metricTable {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.metricTable th,
+.metricTable td {
+    padding: 12px 15px;
+}
+
+.metricTable th {
+    background-color: #42b98370;
+    color: #ffffff;
+    text-align: left;
 }
 </style>
