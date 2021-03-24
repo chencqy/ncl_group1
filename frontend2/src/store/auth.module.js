@@ -16,7 +16,6 @@ export const auth = {
       return AuthService.login(user).then(
         user => {
           commit('loginSuccess', user)
-          console.log('logged in module.js')
           return Promise.resolve(user)
         },
         error => {
@@ -46,6 +45,7 @@ export const auth = {
   },
   mutations: {
     loginSuccess (state, user) {
+      // Used for router checks
       state.status.loggedIn = true
       state.user = user
     },

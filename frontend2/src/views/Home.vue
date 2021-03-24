@@ -11,8 +11,6 @@
       </tr>
     </table>
     <br>
-      <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
-      <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
     <b-card :title="room" v-for="(room,index) in content" :key="index" class="col-4 d-inline-flex" style="margin:10px">
       <b-card-text>
         <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
@@ -30,19 +28,16 @@ export default {
     return {
       content: '',
       metrics: '',
-      display: false
+      display: false // display table
     }
   },
   methods: {
     buttonClick (room) {
-      var fix = room.replaceAll(' ', '-').toLowerCase()
-      console.log(fix)
+      var roomURL = room.replaceAll(' ', '-').toLowerCase()
+      // This is bad, need to more securely define role in user service rather than define here?
       var role = 'public'
-      // console.log(this.currentUser.user.power)
-      console.log(role)
-      UserService.getRoomMetric(fix, role).then(
+      UserService.getRoomMetric(roomURL, role).then(
         response => {
-          console.log(response.data.metrics)
           if (response.data.metrics.length === 0) {
             this.$toast('No data to display')
             this.metrics = ''

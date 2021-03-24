@@ -6,7 +6,6 @@
             Floor:
             <select name="subject" v-model="floorSelect" @change="onChangeFloor($event)">
               <option  v-for="(floor) in floors" :key="floor.index" :value="floor.index" >{{floor.number}}</option>
-              <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
             <br /><br/>
           </form>
@@ -15,16 +14,13 @@
             Room:
             <select name="subject" v-model="roomSelect"  @change="onChangeRoom($event)">
               <option  v-for="(room,index) in filterResult" :key="index" :value="room" >{{room}}</option>
-              <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
             <br /><br/>
           </form>
           <form name="form3" id="form" action="/action_page.php">
             Metric:
             <select name="subject" v-model="metricSelect"  @change="onChangeMetric($event)">
-              <!--Do we need :value here -->
               <option  v-for="(metric,index) in metrics" :key="index" :value="metric.name" >{{metric.name}}</option>
-              <!-- For loop loops through all the available room numbers and inputs these into the dropdown - these should be limited for each person, general public should only have access to first floor, students to all available rooms up to 3rd floor, staff/phd rooms to 4th floor, manager/building supervisor has access to all rooms including receptions  -->
             </select>
           </form>
           <date-picker v-model="time1" type="date" @change="onChangeDate($event)" format="YYYY-MM-DD"></date-picker>
@@ -32,15 +28,15 @@
           <br>
             <b-row>
                 <b-col>
-                <vue-frappe v-if="showgraph"
-                  id="test"
-                  type="line"
-                  :height="500"
-                  :labels="labels[0].values"
-                  :lineOptions="{regionFill: 1}"
-                  :colors="['red']"
-                  :dataSets="content.datasets"
-                ></vue-frappe>
+                  <vue-frappe v-if="showgraph"
+                    id="test"
+                    type="line"
+                    :height="500"
+                    :labels="labels[0].values"
+                    :lineOptions="{regionFill: 1}"
+                    :colors="['red']"
+                    :dataSets="content.datasets"
+                  ></vue-frappe>
                 </b-col>
             </b-row>
             <br>
@@ -48,17 +44,16 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 import UserService from '../services/user.service'
-// import { response } from 'express'
 
 export default {
   components: { DatePicker },
   name: 'Room',
   data () {
     return {
+      //
       showgraph: false,
       graph_data: null,
       x_axis: [],
@@ -67,18 +62,17 @@ export default {
         datasets: []
       },
       labels: [],
-      time1: null,
-      time2: null,
+      time1: null, // selected time
+      time2: null, // selected time
       time: { time1: { date: '', month: '', year: '' }, time2: { date: '', month: '', year: '' }, start: '', end: '' },
       floorSelect: null,
-      apiRoom: null,
-      apiMetric: null,
       roomSelect: null,
       metricSelect: null,
+      apiRoom: null,
+      apiMetric: null,
       rooms: null,
-      metrics: null,
+      metrics: null, // metrics for selected rooms
       filterResult: null, // Used for floor change
-      // store these better?
       floors: [{ number: 'G', index: 0 }, // Options for floor picks
         { number: 1, index: 1 },
         { number: 2, index: 2 },
@@ -98,10 +92,8 @@ export default {
     await this.createInput()
   },
   methods: {
-    // Load room names from CSV file, stored in rooms.data
     createInput () {
       UserService.getAdminBoard().then(response => {
-        console.log(response)
         this.rooms = response.data.admin
       })
     },
@@ -109,18 +101,17 @@ export default {
     onChangeFloor (event) {
       this.filterResult = this.rooms[event.target.value].rooms
     },
-    // tidy up
+    // When room changes, request metrics from that room
     onChangeRoom (event) {
       this.apiRoom = event.target.value.replaceAll(' ', '-').toLowerCase()
       var role = UserService.getRole(this.currentUser.user.power)
-      console.log(role)
       UserService.getRoomMetric(this.apiRoom, role).then(response => {
-        console.log(response)
         this.metrics = response.data.metrics
       })
     },
-    // Need to change room value to fit USB uni api
-    // room-6.025
+    // Next two methods could be written better, a lot of repeating code for getRoomMetricSeries
+    // Currently the graph will update when you change date/metric on the same room but wont update if you change room/floor
+    // This would be more difficult to manage as each room has different metrics
     onChangeMetric (event) {
       this.showgraph = false
       this.apiMetric = event.target.value.replaceAll(' ', '-').toLowerCase()
@@ -128,7 +119,6 @@ export default {
         var role = UserService.getRole(this.currentUser.user.power)
         UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, role).then(response => {
           if (this.graph_data === null) {
-            console.log(response)
             this.graph_data = response.data.historic
           } else {
             // need to clear up the variables used for the graph
@@ -143,26 +133,21 @@ export default {
         })
       }
     },
-    // Need to tidy up
-    onChangeDate (event) {
+    onChangeDate () {
+      this.showgraph = false
       this.time.time1.date = this.changeNumber(this.time1.getDate())
       this.time.time1.month = this.changeNumber(this.time1.getMonth().valueOf() + 1)
       this.time.time1.year = this.time1.getFullYear()
-      // var start = String(this.time.time1.year + '-' + this.time.time1.month + '-' + this.time.time1.date)
       this.time.start = String(this.time.time1.year + '-' + this.time.time1.month + '-' + this.time.time1.date)
 
       this.time.time2.date = this.changeNumber(this.time2.getDate())
       this.time.time2.month = this.changeNumber(this.time2.getMonth().valueOf() + 1)
       this.time.time2.year = this.time2.getFullYear()
-      // var end = String(this.time.time2.year + '-' + this.time.time2.month + '-' + this.time.time2.date)
       this.time.end = String(this.time.time2.year + '-' + this.time.time2.month + '-' + this.time.time2.date)
-      // this.setGraphData()
 
-      console.log(this.apiRoom, this.apiMetric, this.time.start, this.time.end, this.currentUser.user.power)
       if (this.apiMetric !== null) {
         var role = UserService.getRole(this.currentUser.user.power)
         UserService.getRoomMetricSeries(this.apiRoom, this.apiMetric, this.time.start, this.time.end, role).then(response => {
-          // console.log(response.data.historic)
           if (this.graph_data == null) {
             this.graph_data = response.data.historic
           } else {
@@ -192,6 +177,7 @@ export default {
       this.labels.push({ values: this.x_axis })
       this.showgraph = true
     },
+    // Returns date or month as 00
     changeNumber (number) {
       if (number.toString().length === 1) {
         number = '0' + number
@@ -199,7 +185,6 @@ export default {
       return number
     }
   }
-
 }
 </script>
 <style>

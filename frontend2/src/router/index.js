@@ -26,11 +26,6 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Profile.vue')
   }
 ]
 
@@ -40,11 +35,9 @@ const router = new VueRouter({
 // need to access vuex store $store.state.auth.status.loggedIn
 router.beforeEach((to, from, next) => {
   // pages you can access without being logged in
-  // This is part breaking login
   const publicPages = ['/login', '/register', '/home']
   const authRequired = !publicPages.includes(to.path)
-  // const loggedIn = localStorage.getItem('user')
-  console.log(store.state.auth.status.loggedIn)
+
   const loggedIn = store.state.auth.status.loggedIn
 
   if (authRequired && !loggedIn) {
@@ -53,23 +46,4 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
-
-/* function guard (to, from, next) {
-  console.log(store)
-  var isAuthenticated = false
-  // this is just an example. You will have to find a better or
-  // centralised way to handle you localstorage data handling
-
-  if (localStorage.getItem('user')) {
-    isAuthenticated = true
-    console.log(localStorage.getItem('user'))
-  } else {
-    isAuthenticated = false
-  }
-  if (isAuthenticated) {
-    next() // allow to enter route
-  } else {
-    next('/login') // go to '/login';
-  }
-} */
 export default router

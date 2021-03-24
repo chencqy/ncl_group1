@@ -2,6 +2,7 @@
     <div class="dashboard">
         <br>
         <br>
+        <!--Graph feature for admin -->
         <roomComp v-if="this.currentUser && this.currentUser.user.power.includes('ROLE_BuildingManager,')"></roomComp>
         <b-container>
             <b-row>
@@ -35,8 +36,6 @@
 </template>
 
 <script>
-// import { delete } from 'vue/types/umd'
-// import { response } from 'express'
 import UserService from '../services/user.service'
 import Room from '../components/room'
 /* eslint-disable */ 
@@ -56,6 +55,7 @@ export default {
     currentUser () {
       return this.$store.state.auth.user
     },
+    // Api returns data with all floors first in json when admin, dont want this displayed in cards
     cardData () {
       if (this.currentUser.user.power.includes('ROLE_BuildingManager,')) {
         return this.content.slice(8)
@@ -71,11 +71,12 @@ export default {
     linkGen(pageNum) {
       return pageNum === 1 ? '?' : `?page=${pageNum}`
     },
+    // Board methods
     showStudentBoard () {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_Student,')) {
         UserService.getStudentBoard().then(
           response => {
-            console.log(response.data.student)
+            // console.log(response.data.student)
             this.content = response.data.student
           } 
         ) 
@@ -85,7 +86,7 @@ export default {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_Researcher,')) {
         UserService.getResearchBoard().then(
           response => {
-            console.log(response.data.student)
+            // console.log(response.data.student)
             this.content = response.data.researcher
           } 
         ) 
@@ -95,21 +96,17 @@ export default {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_BuildingManager,')) {
         UserService.getAdminBoard().then(
           response => {
-            console.log(response.data.student)
+            // console.log(response.data.student)
             this.content = response.data.admin
           } 
         ) 
       }
     },
     buttonClick(room){
-      var fix = room.replaceAll(' ', '-').toLowerCase()
-      console.log(fix)
+      var roomURL = room.replaceAll(' ', '-').toLowerCase()
       var role = UserService.getRole(this.currentUser.user.power)
-      console.log(this.currentUser.user.power)
-      console.log(role)
-        UserService.getRoomMetric(fix , role).then(
+        UserService.getRoomMetric(roomURL , role).then(
           response => {
-            console.log(response.data.metrics)
             if (response.data.metrics.length === 0 ){
               this.$toast('No data to display');
               this.metrics = ''

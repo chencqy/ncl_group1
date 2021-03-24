@@ -8,16 +8,15 @@ axios.defaults.withCredentials = true
 class AuthService {
   login (user) {
     return axios
-    // Add login endpoint
       .post(API_URL + 'api/login', {
         username: user.username,
         password: user.password
       })
       .then(response => {
         if (response.data.accessToken) {
+          // User is currently stored client side. Report mentions how thre secruity can be improved wiwthh HTTPOnly Secure cookies
           localStorage.setItem('user', JSON.stringify(response.data))
         }
-
         return response.data
       })
   }
@@ -26,7 +25,6 @@ class AuthService {
     localStorage.removeItem('user')
   }
 
-  // do we need register
   register (user) {
     return axios.post(API_URL + 'signup', {
       username: user.username,

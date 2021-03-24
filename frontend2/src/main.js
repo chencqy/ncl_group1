@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import VuePapaParse from 'vue-papa-parse'
 import Chart from 'vue2-frappe'
 import VeeValidate from 'vee-validate'
 
@@ -17,7 +16,6 @@ import Toast from 'vue2-toast'
 Vue.use(Toast)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-Vue.use(VuePapaParse)
 Vue.use(Chart)
 Vue.use(VeeValidate)
 
