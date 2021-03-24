@@ -2,14 +2,27 @@
     <div class="dashboard">
         <br>
         <br>
+        <!--Graph feature for admin -->
+        <roomComp v-if="this.currentUser && this.currentUser.user.power.includes('ROLE_BuildingManager,')"></roomComp>
         <b-container>
             <b-row>
                 <b-col>
-                  <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
+                  <table class="metricTable" v-if="display">
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr class="dataInf" v-for="(metric,index) in metrics" :key="index">
+                      <td>{{metric.name}}</td>
+                      <td>{{metric.value}}</td>
+                    </tr>
+                  </table>
+                  <br>
                   <b-card>
                     <b-card
                       :title="room"
-                      v-for="(room,index) in content" :key="index">
+                      v-for="(room,index) in cardData" :key="index"
+                      class="col-4 d-inline-flex" style="margin:10px">
                       <b-card-text>
                       </b-card-text>
                       <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
@@ -23,25 +36,33 @@
 </template>
 
 <script>
-// import { delete } from 'vue/types/umd'
-// import { response } from 'express'
 import UserService from '../services/user.service'
-
+import Room from '../components/room'
 /* eslint-disable */ 
 export default {
+  components: {
+    'roomComp': Room,
+  },
   name: 'Dashboard',
   data () {
     return {
       content: '',
-      metrics: ''
+      metrics: '',
+      display: false
     }
-  },
+  },  
   computed: {
     currentUser () {
       return this.$store.state.auth.user
+    },
+    // Api returns data with all floors first in json when admin, dont want this displayed in cards
+    cardData () {
+      if (this.currentUser.user.power.includes('ROLE_BuildingManager,')) {
+        return this.content.slice(8)
+      } else
+      return this.content
     }
   },
-  // Add logout button?
   methods: {
     logOut () {
       this.$store.dispatch('auth/logout')
@@ -50,11 +71,12 @@ export default {
     linkGen(pageNum) {
       return pageNum === 1 ? '?' : `?page=${pageNum}`
     },
+    // Board methods
     showStudentBoard () {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_Student,')) {
         UserService.getStudentBoard().then(
           response => {
-            console.log(response.data.student)
+            // console.log(response.data.student)
             this.content = response.data.student
           } 
         ) 
@@ -64,7 +86,7 @@ export default {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_Researcher,')) {
         UserService.getResearchBoard().then(
           response => {
-            console.log(response.data.student)
+            // console.log(response.data.student)
             this.content = response.data.researcher
           } 
         ) 
@@ -74,22 +96,25 @@ export default {
       if (this.currentUser && this.currentUser.user.power.includes('ROLE_BuildingManager,')) {
         UserService.getAdminBoard().then(
           response => {
-            console.log(response.data.student)
+            // console.log(response.data.student)
             this.content = response.data.admin
           } 
         ) 
       }
     },
     buttonClick(room){
-      var fix = room.replaceAll(' ', '-').toLowerCase()
-      console.log(fix)
+      var roomURL = room.replaceAll(' ', '-').toLowerCase()
       var role = UserService.getRole(this.currentUser.user.power)
-      console.log(this.currentUser.user.power)
-      console.log(role)
-        UserService.getRoomMetric(fix , role).then(
+        UserService.getRoomMetric(roomURL , role).then(
           response => {
-            console.log(response.data.metrics)
-            this.metrics = response.data.metrics
+            if (response.data.metrics.length === 0 ){
+              this.$toast('No data to display');
+              this.metrics = ''
+              this.display = false
+            } else {
+                this.metrics = response.data.metrics
+                this.display = true
+            }
           } 
         )
     }
@@ -119,5 +144,26 @@ p{
   font-size:0.8rem;
   color:#000000;
   text-align:center
+}
+
+.metricTable {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.metricTable th,
+.metricTable td {
+    padding: 12px 15px;
+}
+
+.metricTable th {
+    background-color: #42b98370;
+    color: #ffffff;
+    text-align: left;
 }
 </style>

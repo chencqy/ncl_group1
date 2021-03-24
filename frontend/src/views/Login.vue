@@ -69,7 +69,7 @@ export default {
     }
   },
   created () {
-    // If logged in push to appropraite dashboard
+    // If logged in already push to appropriate dashboard
     if (this.loggedIn) {
       this.$router.push('/dashboard')
     }
@@ -82,12 +82,12 @@ export default {
           this.loading = false
           return
         }
-
+        // Log in and push
         if (this.user.username && this.user.password) {
           this.$store.dispatch('auth/login', this.user).then(
             () => {
+              // Seems to be a bug where if you dont't push to /home after login, trying to access /home after /dashboard will return a blank screen
               this.$router.push('/home')
-              console.log('logged')
             },
             error => {
               this.loading = false

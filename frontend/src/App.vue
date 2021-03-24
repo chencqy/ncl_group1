@@ -1,7 +1,7 @@
 <template>
   <div id='app'>
     <app-header></app-header>
-    <!-- PAGES SHOWN THROUGH HERE IN ROUTER VIEW -->
+    <!-- All app pages shown through here-->
     <b-container>
       <router-view />
     </b-container>

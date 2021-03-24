@@ -1,17 +1,21 @@
 <template>
-  <div class="container">
+  <div class="container"><br>
+     <table class="metricTable" v-if="display">
+      <tr>
+          <th>Metric</th>
+          <th>Value</th>
+      </tr>
+      <tr class="dataInf" v-for="(metric,index) in metrics" :key="index">
+        <td>{{metric.name}}</td>
+        <td>{{metric.value}}</td>
+      </tr>
+    </table>
     <br>
-      <tr v-for="(metric,index) in metrics" :key="index">{{metric.name}}:{{metric.value}}</tr>
-    <br>
-    <!--<p v-for="(room,index) in content" :key="index">{{room.name}}</p>-->
-    <!--<p v-for="(metrics,index) in content" :key="index">{{content[0].metrics}}</p>-->
-  <b-card
-    :title="room"
-    v-for="(room,index) in content" :key="index">
-    <b-card-text>
-    </b-card-text>
-    <b-button  v-on:click="buttonClick(room)" variant="primary">Data</b-button>
-  </b-card>
+    <b-card :title="room" v-for="(room,index) in content" :key="index" class="col-4 d-inline-flex" style="margin:10px">
+      <b-card-text>
+        <b-button v-on:click="buttonClick(room)" variant="primary">Data</b-button>
+      </b-card-text>
+      </b-card>
   </div>
 </template>
 
@@ -23,20 +27,26 @@ export default {
   data () {
     return {
       content: '',
-      metrics: ''
+      metrics: '',
+      display: false // display table
     }
   },
   methods: {
     buttonClick (room) {
-      var fix = room.replaceAll(' ', '-').toLowerCase()
-      console.log(fix)
+      var roomURL = room.replaceAll(' ', '-').toLowerCase()
+      // This is bad, need to more securely define role in user service rather than define here?
       var role = 'public'
-      // console.log(this.currentUser.user.power)
-      console.log(role)
-      UserService.getRoomMetric(fix, role).then(
+      UserService.getRoomMetric(roomURL, role).then(
         response => {
-          console.log(response.data.metrics)
-          this.metrics = response.data.metrics
+          if (response.data.metrics.length === 0) {
+            this.$toast('No data to display')
+            this.metrics = ''
+            this.display = false
+          } else {
+            this.metrics = response.data.metrics
+            this.display = true
+          }
+          document.location.href = '#'
         }
       )
     }
@@ -68,10 +78,30 @@ export default {
 .logo img{
     width: 20%;
 }
-
 p{
   font-size:0.8rem;
   color:#000000;
   text-align:center
+}
+
+.metricTable {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.metricTable th,
+.metricTable td {
+    padding: 12px 15px;
+}
+
+.metricTable th {
+    background-color: #42b98370;
+    color: #ffffff;
+    text-align: left;
 }
 </style>
