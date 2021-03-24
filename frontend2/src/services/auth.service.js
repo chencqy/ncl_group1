@@ -14,7 +14,7 @@ class AuthService {
       })
       .then(response => {
         if (response.data.accessToken) {
-          // User is currently stored client side. Report mentions how thre secruity can be improved wiwthh HTTPOnly Secure cookies
+          // User is currently stored client side. Report mentions how the secruity can be improved wiwthh HTTPOnly Secure cookies
           localStorage.setItem('user', JSON.stringify(response.data))
         }
         return response.data
