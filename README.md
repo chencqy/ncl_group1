@@ -30,6 +30,5 @@ user2 - 123456 (student)
 user3 - 123456 (researcher)
 ```
 
-
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
